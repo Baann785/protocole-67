@@ -1,0 +1,1000 @@
+/* ============================================================
+   ÉPREUVES 1 à 8 (écrans 4 à 11)
+
+   RÈGLE ABSOLUE DU FICHIER : on peut la faire rager autant qu'on veut,
+   mais aucune épreuve ne doit jamais la bloquer pour de bon. Chacune
+   finit par céder — le plus tard possible, et toujours avec une vanne.
+
+   PRINCIPE DE DIFFICULTÉ : les premiers niveaux sont faciles et gentils.
+   Le DERNIER niveau de chaque épreuve est méchant, injouable ou truqué.
+   Tout ce qui ressemble à une perte de progression est purement cosmétique.
+   ============================================================ */
+
+/* ============================================================
+   4 — ÉPREUVE 1 : RITUEL 6-7
+   Escalade : à partir de 55 clics le bouton rétrécit et se déplace,
+   et à 66 il fait semblant de tout remettre à zéro.
+   ============================================================ */
+let n67 = 0, ritOK = false, ritGele = false, fausseRAZ = false;
+ECRANS[4] = function(){
+  tape(document.getElementById('d4'),
+    "Première épreuve. Appuie 67 fois sur le bouton. Pourquoi ? Aucune raison. C'est ça la beauté du truc.");
+};
+const paliers67 = {
+  1:"1. Il n'y a plus de retour en arrière.",
+  5:"5. Tu commences déjà à te demander ce que tu fous là.",
+  10:"10. Ton index chauffe. Wesh alors.",
+  17:"17. À ce stade, arrêter serait un échec personnel.",
+  25:"25. Nasdas distribue des billets, moi je distribue des clics. Chacun son truc.",
+  33:"33. Mi-parcours. « Je suis pas venue ici pour souffrir, OK ? » Bah si.",
+  42:"42. La réponse à tout. Mais la vraie réponse c'est 67.",
+  50:"50 ! Plus que 17. Ta dignité, elle, est déjà partie.",
+  55:"55. ⚠️ Le bouton commence à avoir peur de toi. Il recule.",
+  58:"58. Pas de bras, pas de chocolat. Pas de clics, pas de Tasty Crousty.",
+  60:"60. SEPT. DE. PLUS. TIENS BON.",
+  64:"64. Tu y crois. C'est mignon."
+};
+/* le bouton fuit sur la dernière ligne droite */
+function retrecirBouton(){
+  const btn = document.getElementById('bouton67');
+  if(n67 < 55){ btn.style.width = ''; btn.style.marginLeft = ''; btn.style.fontSize = ''; return; }
+  const p = Math.min(1, (n67 - 54) / 12);
+  btn.style.width = (100 - p * 58) + '%';
+  btn.style.marginLeft = (Math.random() * p * 55) + '%';
+  btn.style.fontSize = 'clamp(24px,' + (15 - p * 9) + 'vw,' + (120 - p * 70) + 'px)';
+}
+document.getElementById('bouton67').onclick = function(){
+  if(ritOK || ritGele) return;
+  n67++; ETAT.clics67 = n67;
+  document.getElementById('compte').textContent = n67;
+  SONS.sixSept();
+  document.body.classList.remove('secousse');
+  void document.body.offsetWidth;
+  if(n67 % 10 === 0) document.body.classList.add('secousse');
+  const pal = document.getElementById('palier');
+  if(paliers67[n67]) pal.textContent = paliers67[n67];
+  if(n67 % 20 === 0) SONS.vineBoom();
+  retrecirBouton();
+
+  /* LE moment : à 66 clics, le compteur "plante" et repart à zéro.
+     Purement cosmétique — n67 n'est jamais touché, elle ne perd rien. */
+  if(n67 === 66 && !fausseRAZ){
+    fausseRAZ = true;
+    ritGele = true;
+    SONS.erreur();
+    document.getElementById('compte').textContent = '0';
+    document.getElementById('compteSous').textContent = '⚠️ ERREUR DE SYNCHRONISATION';
+    pal.innerHTML = "🚨 <b>ERREUR CRITIQUE.</b> Perte de connexion avec le serveur de comptage de Marseille. Compteur réinitialisé. Toutes nos excuses.";
+    document.body.classList.add('secousse');
+    setTimeout(function(){
+      SONS.airhorn();
+      document.getElementById('compte').textContent = '66';
+      document.getElementById('compteSous').textContent = '/ 67 — AUCUN RACCOURCI POSSIBLE';
+      pal.innerHTML = "Nan je rigole. 😂 T'as vu ta tête. Allez, plus qu'un.";
+      ritGele = false;
+    }, 2600);
+    return;
+  }
+
+  if(n67 >= 67){
+    ritOK = true;
+    this.style.width = ''; this.style.marginLeft = ''; this.style.fontSize = '';
+    pal.innerHTML = "🚨 <b>67 ATTEINT.</b> Tu viens de cliquer 67 fois sur un bouton qui rétrécissait, en encaissant un faux plantage. C'est officiel : t'es des nôtres. 🗿";
+    SONS.aura(); confettis(110);
+    document.body.classList.add('aura-max');
+    setTimeout(function(){ document.body.classList.remove('aura-max'); }, 3500);
+    document.getElementById('b4').style.display = 'block';
+    this.textContent = '✅';
+    modale("ÉPREUVE 1 VALIDÉE 🗿",
+      "67 clics, un bouton qui fuyait et un faux plantage encaissé sans rien dire. " + ETAT.nom +
+      ", ton niveau d'aura vient d'être réévalué à la hausse par la Banque Centrale Européenne.");
+  }
+};
+document.getElementById('b4').onclick = function(){ aller(5); };
+
+/* ============================================================
+   5 — ÉPREUVE 2 : TROUVE LE 67
+   Escalade : on annonce 3 manches, il y en a 5. La 4e est en 12×12
+   AVEC les chiffres qui changent de place. La 5e est offerte.
+   ============================================================ */
+const MANCHES_67 = [
+  {n:6,  leurres:['68']},
+  {n:8,  leurres:['68','66']},
+  {n:10, leurres:['68','66','87','61','76']},
+  {n:12, leurres:['68','66','87','61','76','69','97'], surprise:true, bouge:true},
+  {n:1,  leurres:['68'], cadeau:true}
+];
+let manche67 = 0, tMelange67 = null;
+ECRANS[5] = function(){
+  tape(document.getElementById('d5'),
+    "Test optique obligatoire. 3 manches. Trouve le 67. Si tu cliques à côté, on le saura, et on le notera.");
+  manche67 = 0; ETAT.rates67 = 0;
+  document.getElementById('b5').style.display = 'none';
+  document.getElementById('r5').textContent = '';
+  construireGrille();
+};
+function construireGrille(){
+  clearInterval(tMelange67);
+  const cfg = MANCHES_67[manche67];
+  const g = document.getElementById('grille67');
+  const total = cfg.n * cfg.n;
+  const cible = alea(total);
+  let ratesManche = 0;
+
+  g.style.gridTemplateColumns = 'repeat(' + cfg.n + ',1fr)';
+  g.style.fontSize = cfg.cadeau ? 'clamp(40px,14vw,90px)' : 'clamp(8px,' + (46 / cfg.n) + 'vw,26px)';
+  g.innerHTML = '';
+  document.getElementById('manche67').textContent =
+    cfg.cadeau ? 'MANCHE 5/3 — CADEAU' : cfg.surprise ? 'MANCHE 4/3 (?!)' : 'MANCHE ' + (manche67 + 1) + '/3';
+  document.getElementById('rates67').textContent = 'RATÉS : ' + ETAT.rates67;
+
+  const cases = [];
+  for(let i = 0; i < total; i++){
+    const s = document.createElement('span');
+    const bon = (i === cible);
+    s.textContent = bon ? '67' : pioche(cfg.leurres);
+    s.onclick = function(){
+      if(bon) reussiteGrille(g);
+      else{
+        ETAT.rates67++; ratesManche++;
+        SONS.erreur();
+        document.getElementById('rates67').textContent = 'RATÉS : ' + ETAT.rates67;
+        g.classList.remove('rate'); void g.offsetWidth; g.classList.add('rate');
+        document.getElementById('r5').textContent = pioche([
+          "C'est un " + s.textContent + ". Un 68 n'est pas un 67. C'est la base.",
+          "Non. Regarde mieux. Prends ton temps, on a la vie.",
+          "Raté. Tu veux des lunettes ? On peut arranger ça.",
+          "Faux. Ton oculiste va recevoir un mail.",
+          "Non. Même Swan et Néo auraient trouvé."
+        ]);
+        // on finit par l'aider : plus tôt sur la manche surprise, elle a assez souffert
+        if(ratesManche === (cfg.surprise ? 6 : 7)){
+          document.getElementById('r5').textContent = "Bon. J'te le fais clignoter. C'est humiliant pour nous deux.";
+          cases[cible].classList.add('aide');
+        }
+      }
+    };
+    cases.push(s);
+    g.appendChild(s);
+  }
+
+  /* manche 4 : les cases changent de place toutes les 2,5 s. Bonne chance. */
+  if(cfg.bouge){
+    tMelange67 = setInterval(function(){
+      const ordre = cases.map(function(_, i){ return i; });
+      for(let k = ordre.length - 1; k > 0; k--){
+        const j = alea(k + 1), t = ordre[k]; ordre[k] = ordre[j]; ordre[j] = t;
+      }
+      cases.forEach(function(c, i){ c.style.order = ordre[i]; });
+      SONS.bip();
+    }, 2500);
+    g.style.display = 'flex';
+    g.style.flexWrap = 'wrap';
+    cases.forEach(function(c){ c.style.flex = '0 0 calc(' + (100 / cfg.n) + '% - 2px)'; });
+    document.getElementById('r5').innerHTML = "⚠️ <b>Et les chiffres bougent.</b> Oui. Bon courage.";
+  }else{
+    g.style.display = 'grid';
+    cases.forEach(function(c){ c.style.flex = ''; c.style.order = ''; });
+  }
+}
+function reussiteGrille(g){
+  clearInterval(tMelange67);
+  SONS.pop(); confettis(60);
+  manche67++;
+
+  if(manche67 >= MANCHES_67.length){
+    document.getElementById('r5').innerHTML =
+      "✅ 5 manches sur 3. Vision validée. Petit détail : il y avait un deuxième 67 dans la manche 4 et tu l'as pas vu. Mais on valide.";
+    document.getElementById('b5').style.display = 'block';
+    g.innerHTML = '';
+    SONS.fanfare(); confettis(100);
+    return;
+  }
+  const suiv = MANCHES_67[manche67];
+  g.innerHTML = '';
+
+  if(suiv.surprise){
+    SONS.erreur();
+    document.getElementById('r5').innerHTML =
+      "🎉 3/3 ! Bravo ! Épreuve termi— <b>ah non attends.</b> En fait il y avait 4 manches. C'est marqué nulle part mais si.";
+    setTimeout(construireGrille, 2500);
+  }else if(suiv.cadeau){
+    SONS.erreur();
+    document.getElementById('r5').innerHTML =
+      "Manche 4 passée. 😤 Il en reste <b>une</b>. Dernière. Promis.";
+    setTimeout(function(){
+      SONS.fanfare();
+      document.getElementById('r5').innerHTML = "Allez, cadeau. T'as assez souffert. 🎁";
+      construireGrille();
+    }, 2500);
+  }else{
+    document.getElementById('r5').textContent = pioche([
+      "Trouvé. Étonnamment vite. Suspect.",
+      "Ok. Manche suivante, et là ça pique.",
+      "Bien joué. Profite, ça va se compliquer."
+    ]);
+    construireGrille();
+  }
+}
+document.getElementById('b5').onclick = function(){ clearInterval(tMelange67); aller(6); };
+
+/* ============================================================
+   6 — ÉPREUVE 3 : SIMON 6-7
+   Escalade : 5 manches de plus en plus rapides. À la manche 5 les
+   boutons changent de place après la séquence — injouable exprès.
+   Et si elle réussit quand même, une manche 6 secrète l'attend,
+   où les boutons bougent à CHAQUE clic.
+   ============================================================ */
+const MANCHES_SIMON = [
+  {longueur:2, pas:620, flash:320, titre:"MANCHE 1 / 5 — tranquille"},
+  {longueur:3, pas:520, flash:280, titre:"MANCHE 2 / 5 — ça va encore"},
+  {longueur:4, pas:380, flash:210, titre:"MANCHE 3 / 5 — ça accélère"},
+  {longueur:6, pas:230, flash:130, titre:"MANCHE 4 / 5 — ⚠️ ça part en vrille"},
+  {longueur:7, pas:105, flash:70,  titre:"MANCHE 5 / 5 — 🚨 MODE 6-7"},
+  {longueur:9, pas:75,  flash:55,  titre:"MANCHE 6 / 5 — 💀 MODE NASDAS (secrète)"}
+];
+let seqSimon = [], posSimon = 0, mancheSimon = 0, simonVerrou = true;
+
+ECRANS[6] = function(){
+  tape(document.getElementById('d6'),
+    "Test de mémoire. Je joue une séquence, tu la répètes. 5 manches. Ça va bien se passer. (non)");
+  seqSimon = []; posSimon = 0; mancheSimon = 0; ETAT.erreursSimon = 0; simonVerrou = true;
+  ETAT.mancheSimonMax = 0;
+  rangerPads();
+  document.getElementById('b6').style.display = 'none';
+  document.getElementById('bSimon').style.display = 'block';
+  document.getElementById('bSimon').textContent = 'LANCER LA SÉQUENCE ▶';
+  document.getElementById('r6').textContent = '';
+  document.getElementById('infoSimon').textContent = MANCHES_SIMON[0].titre;
+};
+
+/* remet les 4 pads dans l'ordre d'origine */
+function rangerPads(){
+  Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
+    p.style.order = p.dataset.i;
+  });
+}
+/* mélange leur position à l'écran — l'identité logique (data-i) ne bouge pas,
+   donc c'est bien elle qui doit retrouver la bonne couleur ailleurs */
+function melangerPads(){
+  const ordre = [0,1,2,3];
+  for(let k = 3; k > 0; k--){ const j = alea(k+1), t = ordre[k]; ordre[k] = ordre[j]; ordre[j] = t; }
+  Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p, i){
+    p.style.order = ordre[i];
+  });
+}
+
+function flashPad(i, dureeMs){
+  const p = document.querySelector('.pad[data-i="' + i + '"]');
+  p.classList.add('on');
+  SONS.pad(i);
+  setTimeout(function(){ p.classList.remove('on'); }, dureeMs);
+}
+
+function jouerSequence(){
+  const cfg = MANCHES_SIMON[mancheSimon - 1];
+  simonVerrou = true;
+  rangerPads();
+  document.getElementById('r6').textContent = 'Écoute…';
+  seqSimon.forEach(function(v, i){
+    setTimeout(function(){ flashPad(v, cfg.flash); }, 500 + i * cfg.pas);
+  });
+  setTimeout(function(){
+    simonVerrou = false;
+    if(mancheSimon >= 6){
+      melangerPads();
+      document.getElementById('r6').innerHTML =
+        "À toi. Et cette fois <b>les boutons bougent à chaque clic</b>. 💀";
+      SONS.vineBoom();
+    }else if(mancheSimon === 5){
+      melangerPads();
+      document.getElementById('r6').innerHTML = "À toi. Ah, et <b>j'ai mélangé les boutons</b>. Bonne chance. 🙂";
+      SONS.vineBoom();
+    }else{
+      document.getElementById('r6').textContent = 'À toi. ' + seqSimon.length + ' à répéter.';
+    }
+  }, 500 + seqSimon.length * cfg.pas);
+}
+
+function lancerManche(n){
+  mancheSimon = n;
+  ETAT.mancheSimonMax = Math.max(ETAT.mancheSimonMax, n);
+  const cfg = MANCHES_SIMON[n - 1];
+  seqSimon = [];
+  for(let i = 0; i < cfg.longueur; i++) seqSimon.push(alea(4));
+  posSimon = 0;
+  document.getElementById('infoSimon').textContent = cfg.titre + ' — ' + cfg.longueur + ' SIGNAUX';
+  jouerSequence();
+}
+function finirSimon(html){
+  simonVerrou = true;
+  rangerPads();
+  document.getElementById('r6').innerHTML = html;
+  document.getElementById('b6').style.display = 'block';
+}
+
+document.getElementById('bSimon').onclick = function(){
+  this.style.display = 'none';
+  lancerManche(1);
+};
+
+Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
+  p.onclick = function(){
+    if(simonVerrou) return;
+    const i = +p.dataset.i;
+    flashPad(i, 180);
+    if(mancheSimon >= 6) melangerPads();   // mode Nasdas : ça bouge à chaque clic
+
+    if(i === seqSimon[posSimon]){
+      posSimon++;
+      if(posSimon < seqSimon.length) return;
+      simonVerrou = true;
+
+      if(mancheSimon >= 6){
+        // elle a battu la manche secrète. On s'incline.
+        finirSimon("👑 <b>MANCHE 6 RÉUSSIE.</b> 9 signaux, 75 ms, les boutons qui bougent à chaque clic. " +
+                   "On sait pas ce que t'es, mais c'est pas humain.");
+        SONS.aura(); confettis(120);
+        toast('👑 MODE NASDAS VAINCU');
+        secret('simon6');
+        modale("👑 LÉGENDE VIVANTE",
+          "Personne, absolument personne, n'était censé passer la manche 6. Elle existait juste pour punir " +
+          "les gens trop forts à la manche 5. " + ETAT.nom + ", tu as cassé le jeu. Respect éternel.");
+        return;
+      }
+      if(mancheSimon === 5){
+        // récompense empoisonnée : une manche de plus
+        SONS.airhorn();
+        document.getElementById('r6').innerHTML =
+          "🏆 <b>MANCHE 5 RÉUSSIE.</b> C'était censé être impossible… donc on a déverrouillé la <b>manche 6 secrète</b>. " +
+          "Désolé. Tu l'as cherché.";
+        setTimeout(function(){ lancerManche(6); }, 3000);
+        return;
+      }
+      document.getElementById('r6').textContent = pioche([
+        "Correct. On monte d'un cran.", "Pas mal. Encore.", "Ok t'es pas si nulle. Suite.",
+        "Bien. Maintenant ça devient méchant."
+      ]);
+      setTimeout(function(){ lancerManche(mancheSimon + 1); }, 1100);
+
+    }else{
+      ETAT.erreursSimon++;
+      SONS.bruh();
+      posSimon = 0;
+      simonVerrou = true;
+      rangerPads();
+
+      if(mancheSimon >= 6){
+        finirSimon("Raté — mais tu avais déjà battu la manche 5, et ça personne le fait. " +
+                   "<b>La manche 6 était une punition, pas une épreuve.</b> Passe, tu l'as mérité.");
+        SONS.fanfare(); confettis(90);
+        return;
+      }
+      // la manche 5 est injouable par construction : la moindre erreur la libère
+      if(mancheSimon >= 5){
+        finirSimon("Raté. Évidemment. <b>C'était impossible</b> : 7 signaux en une seconde et les boutons qui bougent. " +
+                   "Personne y arrive. On voulait juste voir ta tête. Passe.");
+        SONS.erreur();
+        return;
+      }
+      if(ETAT.erreursSimon >= 5){
+        finirSimon("5 erreurs. Bon. <b>On te laisse passer par pitié.</b> Joyeux anniversaire quand même.");
+        SONS.erreur();
+        return;
+      }
+      document.getElementById('r6').textContent = pioche([
+        "Raté. Erreur " + ETAT.erreursSimon + "/5. On refait la même manche.",
+        "Non. C'était pas ça du tout. Erreur " + ETAT.erreursSimon + "/5.",
+        "Aïe. Erreur " + ETAT.erreursSimon + "/5. Concentre-toi deux secondes.",
+        "Erreur " + ETAT.erreursSimon + "/5. Tu veux qu'on ralentisse ? Non."
+      ]);
+      setTimeout(function(){ lancerManche(mancheSimon); }, 1200);
+    }
+  };
+});
+document.getElementById('b6').onclick = function(){ aller(7); };
+
+/* ============================================================
+   7 — ÉPREUVE 4 : MOT DE PASSE IMPOSSIBLE
+   Escalade : 15 règles révélées une par une, dont une qui ANNULE
+   une règle précédente. Puis faux refus. Puis une 16e règle surprise.
+   ============================================================ */
+function sommeChiffres(v){
+  let s = 0;
+  for(let i = 0; i < v.length; i++){
+    const c = v.charCodeAt(i) - 48;
+    if(c >= 0 && c <= 9) s += c;
+  }
+  return s;
+}
+/* `annule` = index d'une règle précédente qui saute dès que celle-ci est dévoilée
+   `surprise` = n'apparaît qu'après le faux refus final */
+const REGLES = [
+  {t:"Au moins 8 caractères.",                            f:function(v){ return v.length >= 8; }},
+  {t:"Doit contenir « 67 ». Évidemment.",                 f:function(v){ return v.indexOf('67') !== -1; }},
+  {t:"Doit contenir une majuscule (fais un effort).",     f:function(v){ return /[A-ZÀ-ÝŒ]/.test(v); }},
+  {t:"Doit contenir ton prénom.",                         f:function(v){ return norm(v).indexOf(norm(ETAT.nom)) !== -1; }},
+  {t:"Doit contenir le mot « aura ».",                    f:function(v){ return norm(v).indexOf('aura') !== -1; }},
+  {t:"Aucun espace. On n'est pas des animaux.",           f:function(v){ return v.indexOf(' ') === -1; }},
+  {t:"La somme de TOUS les chiffres doit faire exactement 20 (ton âge).",
+                                                          f:function(v){ return sommeChiffres(v) === 20; }},
+  {t:"Doit contenir un Moaï 🗿. Débrouille-toi.",          f:function(v){ return v.indexOf('🗿') !== -1; }},
+  {t:"Doit contenir le mot « crousty ». Oui. Crousty.",   f:function(v){ return norm(v).indexOf('crousty') !== -1; }},
+  {t:"On a changé d'avis : la somme des chiffres doit faire 67, pas 20. Désolé.",
+                                                          f:function(v){ return sommeChiffres(v) === 67; }, annule:6},
+  {t:"Doit contenir un 🥪, parce qu'un Crousty sans sandwich c'est juste un mot.",
+                                                          f:function(v){ return v.indexOf('🥪') !== -1; }},
+  {t:"Doit contenir « nasdas ». Sans majuscule, il aime pas.",
+                                                          f:function(v){ return norm(v).indexOf('nasdas') !== -1; }},
+  {t:"Doit se TERMINER par « 67 ».",                      f:function(v){ return v.slice(-2) === '67'; }},
+  {t:"Doit faire moins de 90 caractères. On sait. On sait.",
+                                                          f:function(v){ return v.length < 90; }},
+  {t:"⚠️ RÈGLE AJOUTÉE APRÈS COUP : doit aussi contenir « swanetneo ». Le service juridique insiste.",
+                                                          f:function(v){ return norm(v).indexOf('swanetneo') !== -1; }, surprise:true}
+];
+let mdpFini = false, mdpSurprise = false, niveauMax = 0, chronoIndice = null, chronoIndice2 = null;
+
+/* construit un mot de passe valide : prénom + tous les mots imposés + des 9
+   dosés pour que la somme des chiffres tombe pile sur 67, et « 67 » à la fin */
+function solutionMdp(){
+  const nom = ETAT.nom.charAt(0).toUpperCase() + ETAT.nom.slice(1).toLowerCase();
+  const base = nom + "auracrousty🗿🥪nasdasswanetneo";
+  let manque = Math.max(0, 67 - sommeChiffres(base) - 13);   // 13 = le « 67 » final
+  let suffixe = "";
+  while(manque > 9){ suffixe += "9"; manque -= 9; }
+  if(manque > 0) suffixe += String(manque);
+  return base + suffixe + "67";
+}
+
+ECRANS[7] = function(){
+  tape(document.getElementById('d7'),
+    "Sécurité renforcée. Crée un mot de passe. Les règles arrivent au fur et à mesure. Non, on peut pas te les donner toutes d'un coup.");
+  mdpFini = false; mdpSurprise = false; niveauMax = 0;
+  document.getElementById('inputMdp').value = '';
+  document.getElementById('b7').style.display = 'none';
+  document.getElementById('bIndice').style.display = 'none';
+  document.getElementById('bMoai').style.display = 'none';
+  document.getElementById('bCrousty').style.display = 'none';
+  document.getElementById('indiceMdp').textContent = '';
+  majRegles();
+
+  clearTimeout(chronoIndice); clearTimeout(chronoIndice2);
+  chronoIndice = setTimeout(function(){
+    if(!mdpFini) document.getElementById('indiceMdp').textContent =
+      "→ Indice gratuit : ton prénom, puis « auracrousty », puis les emojis, puis « nasdas ». Les chiffres, débrouille-toi.";
+  }, 45000);
+  chronoIndice2 = setTimeout(function(){
+    if(!mdpFini) document.getElementById('bIndice').style.display = 'block';
+  }, 90000);
+};
+
+function majRegles(){
+  const v = document.getElementById('inputMdp').value;
+  const liste = document.getElementById('listeRegles');
+
+  // toutes les annulations des règles déjà dévoilées s'appliquent définitivement
+  const annulees = {};
+  for(let i = 0; i <= niveauMax && i < REGLES.length; i++){
+    if(REGLES[i].annule != null) annulees[REGLES[i].annule] = true;
+  }
+
+  liste.innerHTML = '';
+  let toutesOK = true;
+  for(let i = 0; i < REGLES.length; i++){
+    if(REGLES[i].surprise && !mdpSurprise) continue;   // pas encore dévoilée
+    if(annulees[i]){
+      liste.insertAdjacentHTML('beforeend',
+        '<div class="regle annulee"><span class="etat">🚫</span><span>' + REGLES[i].t + '</span></div>');
+      continue;
+    }
+    const ok = REGLES[i].f(v);
+    liste.insertAdjacentHTML('beforeend',
+      '<div class="regle' + (ok ? ' ok' : '') + '"><span class="etat">' + (ok ? '✅' : '❌') +
+      '</span><span>' + REGLES[i].t + '</span></div>');
+    niveauMax = Math.max(niveauMax, i);
+    if(!ok){ toutesOK = false; break; }   // une règle à la fois, comme un vrai cauchemar
+  }
+
+  // les boutons d'insertion n'apparaissent qu'une fois la règle concernée dévoilée
+  if(niveauMax >= 7)  document.getElementById('bMoai').style.display = 'block';
+  if(niveauMax >= 10) document.getElementById('bCrousty').style.display = 'block';
+
+  const somme = sommeChiffres(v);
+  const objectif = annulees[6] ? 67 : 20;
+  document.getElementById('sommeInfo').textContent =
+    v ? 'somme des chiffres actuelle : ' + somme + (somme === objectif ? ' ✅' : ' (objectif : ' + objectif + ')') : '';
+
+  if(toutesOK && !mdpFini){
+    if(!mdpSurprise) refuserPuisSurprise();
+    else accepterMdp();
+  }
+}
+
+/* le faux refus, puis la règle qu'on avait « oubliée » */
+function refuserPuisSurprise(){
+  mdpFini = true;   // on gèle le temps de l'animation
+  clearTimeout(chronoIndice); clearTimeout(chronoIndice2);
+  document.getElementById('bIndice').style.display = 'none';
+  document.getElementById('indiceMdp').textContent = '';
+  const liste = document.getElementById('listeRegles');
+
+  liste.innerHTML = '<div class="regle"><span class="etat">⏳</span><span>Vérification du mot de passe…</span></div>';
+  SONS.bip();
+
+  setTimeout(function(){
+    SONS.erreur();
+    liste.innerHTML = '<div class="regle"><span class="etat">❌</span><span><b>REFUSÉ.</b> ' +
+      'Mot de passe trop fort. Le serveur a pris peur. Merci de tout recommencer depuis le début.</span></div>';
+    document.body.classList.add('secousse');
+  }, 1600);
+
+  setTimeout(function(){
+    SONS.vineBoom();
+    liste.innerHTML = '<div class="regle"><span class="etat">😌</span><span>' +
+      'Nan je déconne, tu recommences pas. C\'est bon.</span></div>';
+  }, 3600);
+
+  setTimeout(function(){
+    SONS.airhorn();
+    mdpSurprise = true;
+    mdpFini = false;
+    tape(document.getElementById('d7'),
+      "Par contre. Le service juridique vient d'ajouter une règle. Une seule. La dernière. Promis.");
+    majRegles();
+    // si elle galère sur la surprise, l'aide revient vite
+    chronoIndice2 = setTimeout(function(){
+      if(!mdpFini) document.getElementById('bIndice').style.display = 'block';
+    }, 20000);
+  }, 5400);
+}
+
+function accepterMdp(){
+  mdpFini = true;
+  clearTimeout(chronoIndice); clearTimeout(chronoIndice2);
+  document.getElementById('bIndice').style.display = 'none';
+  document.getElementById('bMoai').style.display = 'none';
+  document.getElementById('bCrousty').style.display = 'none';
+  document.getElementById('indiceMdp').textContent = '';
+  SONS.aura(); confettis(110);
+  document.getElementById('listeRegles').innerHTML =
+    '<div class="regle ok"><span class="etat">🏆</span><span>Mot de passe accepté. Pour de vrai. ' +
+    'On va jamais s\'en servir, c\'était juste pour te voir souffrir.</span></div>';
+  document.getElementById('b7').style.display = 'block';
+  tape(document.getElementById('d7'),
+    "15 règles. Dont une qui annulait la précédente, un faux refus et une règle rajoutée en douce. " +
+    "Sincèrement : la plupart des gens abandonnent à la règle 7.");
+}
+
+document.getElementById('inputMdp').addEventListener('input', majRegles);
+document.getElementById('bMoai').onclick = function(){ insererMdp('🗿'); };
+document.getElementById('bCrousty').onclick = function(){ insererMdp('🥪'); };
+function insererMdp(txt){
+  const inp = document.getElementById('inputMdp');
+  inp.value += txt;
+  SONS.pop();
+  majRegles();
+  inp.focus();
+}
+document.getElementById('bIndice').onclick = function(){
+  const sol = solutionMdp();
+  ETAT.indiceMdp = true;
+  document.getElementById('inputMdp').value = sol;
+  SONS.bruh();
+  tape(document.getElementById('d7'), "Pff. Tiens : « " + sol + " ». Aucune fierté. Mais bon, c'est ton anniversaire.");
+  majRegles();
+};
+document.getElementById('b7').onclick = function(){ aller(8); };
+
+/* ============================================================
+   8 — ÉPREUVE 5 : ATTRAPE LES MOAÏ
+   Escalade : à 7 Moaï on lui annonce que l'objectif était 67, puis
+   on lui impose une « prolongation » de 3 Moaï à vitesse doublée.
+   ============================================================ */
+let scoreTaupe = 0, tempsTaupe = 20, tTaupe = null, tSpawn = null, essaisTaupe = 0, prolongation = false;
+ECRANS[8] = function(){
+  tape(document.getElementById('d8'),
+    "Épreuve de réflexes. Attrape 7 Moaï 🗿 en 20 secondes. Tape sur un crâne 💀 et tu perds un point. Simple.");
+  const z = document.getElementById('taupes');
+  if(!z.children.length){
+    for(let i = 0; i < 9; i++){
+      const t = document.createElement('div');
+      t.className = 'trou';
+      t.innerHTML = '<span></span>';
+      t.onclick = function(){ taperTrou(t); };
+      z.appendChild(t);
+    }
+  }
+  essaisTaupe = 0; prolongation = false;
+  resetTaupe();
+};
+function resetTaupe(){
+  clearInterval(tTaupe); clearInterval(tSpawn);
+  scoreTaupe = 0; tempsTaupe = 20;
+  document.getElementById('scoreTaupe').textContent = 'SCORE : 0 / 7';
+  document.getElementById('tempsTaupe').textContent = '⏱ 20s';
+  document.getElementById('b8').style.display = 'none';
+  document.getElementById('bTaupe').style.display = 'block';
+  document.getElementById('r8').textContent = '';
+  viderTrous();
+}
+function viderTrous(){
+  Array.prototype.forEach.call(document.querySelectorAll('.trou span'), function(s){
+    s.className = ''; s.textContent = '';
+  });
+}
+function objectifTaupe(){ return prolongation ? 3 : 7; }
+function taperTrou(t){
+  const s = t.querySelector('span');
+  if(!s.classList.contains('sorti')) return;
+  if(s.textContent === '🗿'){
+    scoreTaupe++;
+    SONS.pop();
+  }else{
+    scoreTaupe = Math.max(0, scoreTaupe - 1);
+    SONS.bruh();
+    document.getElementById('r8').textContent = pioche([
+      "T'as tapé un crâne. -1. Bravo.",
+      "💀 Non. C'était pas un Moaï. -1.",
+      "Le crâne. Tu l'as vraiment tapé. -1 et un peu de honte."
+    ]);
+  }
+  s.className = ''; s.textContent = '';
+  document.getElementById('scoreTaupe').textContent = 'SCORE : ' + scoreTaupe + ' / ' + objectifTaupe();
+  if(scoreTaupe >= objectifTaupe()) finTaupe(true);
+}
+function lancerTaupe(duree, vitesse, cadence){
+  tempsTaupe = duree;
+  document.getElementById('tempsTaupe').textContent = '⏱ ' + duree + 's';
+  document.getElementById('bTaupe').style.display = 'none';
+
+  tTaupe = setInterval(function(){
+    tempsTaupe--;
+    document.getElementById('tempsTaupe').textContent = '⏱ ' + tempsTaupe + 's';
+    if(tempsTaupe <= 0) finTaupe(false);
+  }, 1000);
+
+  tSpawn = setInterval(function(){
+    const libres = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.trou'), function(t){
+      if(!t.querySelector('span').classList.contains('sorti')) libres.push(t);
+    });
+    if(!libres.length) return;
+    const s = libres[alea(libres.length)].querySelector('span');
+    s.textContent = Math.random() < .78 ? '🗿' : '💀';
+    s.classList.add('sorti');
+    setTimeout(function(){ s.className = ''; s.textContent = ''; }, vitesse);
+  }, cadence);
+}
+document.getElementById('bTaupe').onclick = function(){
+  essaisTaupe++;
+  // 2e essai = les Moaï restent visibles plus longtemps, pour qu'elle finisse par y arriver
+  lancerTaupe(20, essaisTaupe > 1 ? 1150 : 900, 620);
+};
+function finTaupe(gagne){
+  clearInterval(tTaupe); clearInterval(tSpawn);
+  viderTrous();
+  const r = document.getElementById('r8');
+
+  /* fin de la prolongation : quoi qu'il arrive, c'est terminé */
+  if(prolongation){
+    ETAT.moai += scoreTaupe;
+    if(gagne){
+      SONS.fanfare(); confettis(110);
+      r.innerHTML = "✅ <b>Prolongation validée.</b> 10 Moaï au total. T'as fait 3 Moaï de plus que nécessaire pour un site qui te ment depuis le début. Respect.";
+    }else{
+      SONS.erreur();
+      r.innerHTML = "Prolongation ratée. On s'en fiche complètement, c'était du bonus inventé sur le moment. <b>Épreuve validée.</b>";
+    }
+    document.getElementById('b8').style.display = 'block';
+    return;
+  }
+
+  if(gagne){
+    ETAT.moai = Math.max(ETAT.moai, scoreTaupe);
+    // fausse annonce : l'objectif aurait été 67
+    SONS.erreur();
+    r.innerHTML = "🎉 7 Moaï attrapés ! Épreuve réussie ! …<br>Attends. On relit la consigne. " +
+                  "<b>L'objectif était 6-7. Donc 67 Moaï.</b> Il t'en manque 60.";
+    setTimeout(function(){
+      SONS.vineBoom();
+      r.innerHTML = "Nan. 7 c'est bon. 😌 J'ai eu peur hein ?<br>" +
+                    "<b>Par contre on prend 3 Moaï de plus, pour la route.</b> Et ça va deux fois plus vite.";
+      prolongation = true;
+      scoreTaupe = 0;
+      document.getElementById('scoreTaupe').textContent = 'SCORE : 0 / 3';
+      setTimeout(function(){ lancerTaupe(10, 480, 340); }, 2200);
+    }, 3000);
+    return;
+  }
+
+  ETAT.moai = Math.max(ETAT.moai, scoreTaupe);
+  if(essaisTaupe >= 2){
+    r.innerHTML = "Temps écoulé. Score : " + scoreTaupe + "/7. <b>On valide quand même</b>, on va pas y passer la journée.";
+    document.getElementById('b8').style.display = 'block';
+    SONS.erreur();
+  }else{
+    r.innerHTML = "Temps écoulé. Score : " + scoreTaupe + "/7. Nul. <b>Deuxième essai</b>, et cette fois concentre-toi.";
+    SONS.erreur();
+    setTimeout(function(){
+      scoreTaupe = 0;
+      document.getElementById('scoreTaupe').textContent = 'SCORE : 0 / 7';
+      document.getElementById('tempsTaupe').textContent = '⏱ 20s';
+      document.getElementById('bTaupe').textContent = 'DEUXIÈME ESSAI ▶';
+      document.getElementById('bTaupe').style.display = 'block';
+    }, 1600);
+  }
+}
+document.getElementById('b8').onclick = function(){ aller(9); };
+
+/* ============================================================
+   9 — ÉPREUVE 6 : MACHINE À SOUS (truquée)
+   Escalade : elle décroche le jackpot DEUX fois, et deux fois un
+   rouleau « glisse » sous ses yeux. Le vrai jackpot est au 5e tirage.
+   ============================================================ */
+const SYMBOLES = ['6️⃣','7️⃣','🗿','🦈','🎂','💀','🍝','🥖','🥪','📸','🔥'];
+/* Le hasard n'a rien à faire ici : tous les tirages sont écrits d'avance. */
+const TIRAGES = [
+  {r:['6️⃣','7️⃣','💀'], m:"6… 7… 💀. À UN symbole près. C'est fait exprès, évidemment. Retire."},
+  {r:['6️⃣','🥖','7️⃣'], m:"6, une baguette, 7. Dans le désordre. La machine se moque de toi. Retire encore."},
+  {r:['6️⃣','7️⃣','🎂'], m:"🎉 6-7-🎂 — JACKPOT !!! C'est bon, t'as gagné, l'épreuve est termi—",
+   glisse:2, apres:"…<b>ah.</b> Le rouleau de droite a glissé. 💀 Il était sur le gâteau. On l'a tous vu. La machine dit non."},
+  {r:['6️⃣','7️⃣','🎂'], m:"🎉 ENCORE 6-7-🎂 ! Cette fois c'est bon, personne peut nous l'enlever—",
+   glisse:0, apres:"…<b>PAS ENCORE.</b> 😤 Cette fois c'est celui de GAUCHE. 💀 La machine est de mauvaise foi et l'assume."},
+  {r:['6️⃣','7️⃣','🎂'], m:"🎉 6-7-🎂 — JACKPOT. Pour de vrai. Aucun rouleau n'a bougé. Gain : zéro euro et beaucoup d'aura."}
+];
+let tirage = 0, slotTourne = false;
+ECRANS[9] = function(){
+  tape(document.getElementById('d9'),
+    "Jeu de hasard officiel. Objectif : aligner 6-7. Le hasard est truqué en ta faveur, mais alors vraiment pas tout de suite.");
+  tirage = 0;
+  document.getElementById('b9').style.display = 'none';
+  document.getElementById('bSlot').style.display = 'block';
+  document.getElementById('bSlot').textContent = 'TIRER LE LEVIER 🎰';
+  document.getElementById('bSlot').disabled = false;
+  document.getElementById('r9').textContent = '';
+};
+document.getElementById('bSlot').onclick = function(){
+  if(slotTourne) return;
+  slotTourne = true;
+  this.disabled = true;
+  document.getElementById('r9').textContent = '';
+  SONS.skibidi();
+
+  const cible = TIRAGES[Math.min(tirage, TIRAGES.length - 1)];
+  const rouleaux = [document.getElementById('r0'), document.getElementById('r1'), document.getElementById('r2')];
+  const boucles = [];
+
+  rouleaux.forEach(function(el, i){
+    el.classList.add('tourne');
+    boucles[i] = setInterval(function(){ el.textContent = pioche(SYMBOLES); }, 75);
+    setTimeout(function(){
+      clearInterval(boucles[i]);
+      el.classList.remove('tourne');
+      el.textContent = cible.r[i];
+      SONS.pop();
+      if(i === 2) finSlot(cible);
+    }, 900 + i * 650);
+  });
+};
+function finSlot(cible){
+  document.getElementById('r9').innerHTML = cible.m;
+  tirage++; ETAT.tiragesSlot = tirage;
+
+  if(cible.glisse != null){
+    // un rouleau glisse sous ses yeux, une seconde après l'annonce du jackpot
+    SONS.fanfare();
+    setTimeout(function(){
+      document.getElementById('r' + cible.glisse).textContent = '💀';
+      SONS.vineBoom();
+      document.body.classList.remove('secousse'); void document.body.offsetWidth;
+      document.body.classList.add('secousse');
+      document.getElementById('r9').innerHTML = cible.apres + " Retire.";
+      slotTourne = false;
+      document.getElementById('bSlot').disabled = false;
+      document.getElementById('bSlot').textContent = tirage >= 4
+        ? 'RETIRER (dernière fois, je te jure) 🎰'
+        : 'RETIRER (et cette fois pour de vrai) 🎰';
+    }, 1500);
+    return;
+  }
+
+  slotTourne = false;
+  document.getElementById('bSlot').disabled = false;
+
+  if(tirage >= TIRAGES.length){
+    document.getElementById('bSlot').style.display = 'none';
+    document.getElementById('b9').style.display = 'block';
+    SONS.airhorn(); confettis(120);
+    modale("🎰 JACKPOT 6-7",
+      ETAT.nom + ", tu viens de gagner à une machine à sous qui t'a volé DEUX jackpots sous les yeux. " +
+      "Nasdas aurait déjà tout distribué. Toi t'as gagné zéro euro. Profite.");
+  }else{
+    document.getElementById('bSlot').textContent = 'RETIRER LE LEVIER 🎰';
+    SONS.bruh();
+  }
+}
+document.getElementById('b9').onclick = function(){ aller(10); };
+
+/* ============================================================
+   10 — ÉPREUVE 7 : QUIZ SUR ELLE-MÊME
+   Aucune bonne réponse : le score est 67% quoi qu'elle réponde.
+   Escalade : des questions « en trop » à la fin, puis un calcul de
+   score interminable.
+   ============================================================ */
+const QUIZ = [
+  {q:"Première question, facile : la première chose que tu fais le matin ?",
+   r:["Regarder mon tel pendant 6-7 heures","Dire « je me lève dans 5 min » (mensonge)","Ma routine skincare en 47 étapes","Rien, je dors encore, laissez-moi"],
+   f:["Comme 97% de la population. Banal. -3 points.","Menteuse professionnelle. Confirmé.","Personne te croit mais on valide.","Réponse la plus honnête du site."]},
+  {q:"Ton emoji signature, sois honnête :",
+   r:["💀 (utilisé 800 fois par jour)","😭 pour absolument tout","🗿 quand j'ai rien à dire","🤡 que j'envoie aux gens en retard"],
+   f:["Diagnostic : brainrot avancé.","Tu pleures pour un chat sur TikTok. On sait.","Le choix des vrais. +67 aura.","Agressive. On aime."]},
+  {q:"Tu mets combien de temps à répondre à un message ?",
+   r:["6-7 minutes","6-7 heures","6-7 jours ouvrés","J'ai lu, j'ai ri, j'ai jamais répondu"],
+   f:["Mytho. Total mytho.","Ça c'est plus crédible.","Là on touche à la vérité.","VOILÀ. Enfin l'honnêteté."]},
+  {q:"Si t'étais un personnage de brainrot italien, tu serais :",
+   r:["Tralalero Tralala 🦈 (le drip)","Bombardiro Crocodilo 🐊 (le chaos)","Ballerina Cappuccina ☕ (l'élégance)","Tung Tung Tung Sahur 🥁 (la menace)"],
+   f:["Les chaussures, le style, tout y est.","On savait déjà en vrai.","Ambitieux. Faux, mais ambitieux.","Terrifiant. Et exact."]},
+  {q:"Ton vrai plat préféré (le mensonge sera détecté) :",
+   r:["Les pâtes. Toujours les pâtes.","Un Tasty Crousty à n'importe quelle heure","Un kebab à 4h du mat', assumé","« Je mange rien j'ai pas faim » *finit ton assiette*"],
+   f:["Classique et respectable.","Choix de connaisseuse. Le sandwich des légendes.","Zéro honte, respect total.","Le crime parfait, répété 6-7 fois par semaine."]},
+  {q:"Si Nasdas débarquait pour distribuer des billets, tu ferais quoi ?",
+   r:["Je suis déjà dans la file","Je filme pour la story, ça rapporte plus","Je prends et je dis rien à personne","J'ai 20 ans, j'ai plus l'âge (mensonge)"],
+   f:["Honnête. Marseille est fière.","Stratège. On aime.","Discrète et efficace. La vraie technique.","Personne n'a plus l'âge. Tout le monde y va."]},
+  {q:"Quelle est ta plus grosse force ?",
+   r:["Mon aura de 9999","Annuler un plan 10 minutes avant","Rire à mes blagues avant la chute","Retrouver n'importe qui sur insta en 30 secondes 🕵️"],
+   f:["Objectivement vrai. On peut pas nier.","C'est une force ? Débattable.","Le charme absolu.","Le vrai super-pouvoir. La DGSE t'a repérée."]},
+  {q:"Dernière question. T'as quel âge, VRAIMENT ?",
+   r:["20 ans","6-7 ans","20 ans mais mentalement 6","L'âge est un concept, je suis éternelle"],
+   f:["Officiel et confirmé.","On y arrive enfin.","Diagnostic partagé par tes proches.","Réponse acceptée par le Ministère."]},
+  /* les questions en trop */
+  {num:"QUESTION 9 / 8",
+   q:"Ah non pardon, il en restait une. T'as remarqué qu'il y a une question de trop ?",
+   r:["Oui, et ça me perturbe","Non j'avais pas compté","J'ai arrêté de compter à l'épreuve 1","6-7"],
+   f:["Bien vu. Elle comptait pas.","Personne compte. Elle comptait pas.","Sage décision. Elle comptait pas.","Toujours la bonne réponse. Elle comptait pas."]},
+  {num:"QUESTION 6-7 / 8",
+   q:"Vraiment la dernière : est-ce que ce quiz a un sens ?",
+   r:["Non","Absolument pas","J'ai arrêté de chercher","Six Seven"],
+   f:["Correct.","Encore plus correct.","La sagesse.","La seule vraie réponse depuis le début."]}
+];
+let qi = 0;
+ECRANS[10] = function(){
+  document.getElementById('titreQuiz').textContent = "Tu te connais, " + ETAT.nom + " ?";
+  qi = 0;
+  document.getElementById('quizJeu').style.display = 'block';
+  document.getElementById('quizFin').style.display = 'none';
+  poserQuestion();
+};
+function poserQuestion(){
+  if(qi >= QUIZ.length){ calculerScoreQuiz(); return; }
+
+  const q = QUIZ[qi];
+  document.getElementById('qnum').textContent = q.num || ('QUESTION ' + (qi + 1) + ' / 8');
+  document.getElementById('qtxt').textContent = q.q;
+  const box = document.getElementById('reps');
+  box.innerHTML = '';
+  q.r.forEach(function(txt, idx){
+    const b = document.createElement('button');
+    b.className = 'rep'; b.textContent = txt;
+    b.onclick = function(){
+      b.classList.add('choisie');
+      SONS.sixSept();
+      Array.prototype.forEach.call(box.children, function(c){ c.disabled = true; });
+      const fb = document.createElement('div');
+      fb.style.cssText = "font-family:var(--comic);color:#ffe600;margin-top:12px;font-size:15px;line-height:1.5";
+      fb.textContent = '→ ' + q.f[idx];
+      box.appendChild(fb);
+      setTimeout(function(){ qi++; poserQuestion(); }, 1500);
+    };
+    box.appendChild(b);
+  });
+}
+/* le faux calcul interminable */
+function calculerScoreQuiz(){
+  document.getElementById('quizJeu').style.display = 'none';
+  document.getElementById('quizFin').style.display = 'block';
+  const d = document.getElementById('d10');
+  const etapes = [
+    "Calcul du score en cours…",
+    "Croisement avec ta liste Spotify…",
+    "Analyse de tes 6-7 dernières stories…",
+    "Envoi du dossier à Swan et Néo pour relecture…",
+    "Consultation de tes proches… ils ont ri…",
+    "Compilation des résultats… 67%… vérification… toujours 67%…"
+  ];
+  let i = 0;
+  (function suite(){
+    if(i >= etapes.length){
+      SONS.fanfare(); confettis(120);
+      tape(d, "Score final : 67%. Peu importe tes réponses, c'était 67% depuis le début. " +
+              "Tu te connais à 67%. Les 33% restants, on les garde pour nous.");
+      return;
+    }
+    tape(d, etapes[i++], function(){ setTimeout(suite, 700); });
+  })();
+}
+document.getElementById('b10').onclick = function(){ aller(11); };
+
+/* ============================================================
+   11 — ÉPREUVE 8 : CADEAU FUYANT
+   Escalade : il annonce trois fois qu'il abandonne. Il ment trois fois.
+   ============================================================ */
+let esquives = 0, mensonges = 0;
+const MENSONGES = [
+  {txt:"🎁 VAS-Y CLIQUE (j'ai perdu)", fond:'#c6ff00', couleur:'#000',
+   apres:"Ah non pardon. Réflexe. <b>Là c'est vraiment bon</b>, je te jure sur l'aura."},
+  {txt:"🎁 PARDON. RÉFLEXE. LÀ C'EST BON.", fond:'#ff2bd6', couleur:'#fff',
+   apres:"…ok c'était la dernière fois. <b>Sur la tête du Tasty Crousty.</b> Clique."},
+  {txt:"🎁 SUR LA TÊTE DU CROUSTY. CLIQUE.", fond:'#00f0ff', couleur:'#000',
+   apres:"Bon. Là j'ai plus d'excuse. 😐 Vas-y."}
+];
+ECRANS[11] = function(){
+  tape(document.getElementById('d11'),
+    "Dernière épreuve. Ton cadeau est dans ce bouton. Clique dessus. C'est tout. Facile.");
+};
+(function(){
+  const zone = document.getElementById('zoneCadeau'), btn = document.getElementById('cadeau');
+  const phrases = [
+    "Ah. Raté.","Encore raté. T'es proche pourtant.","Non.","Sérieusement ?",
+    "T'as vraiment 20 ans ?","Bon. Encore 2 essais et je te laisse.",
+    "Ok. J'en peux plus. Je bouge plus. Promis. Clique."
+  ];
+  function deplacer(){
+    const z = zone.getBoundingClientRect(), b = btn.getBoundingClientRect();
+    const maxX = Math.max(0, z.width - b.width), maxY = Math.max(0, z.height - b.height);
+    btn.style.left = (Math.random() * maxX + b.width / 2) + 'px';
+    btn.style.top  = (Math.random() * maxY + b.height / 2) + 'px';
+  }
+  function fuir(){
+    if(esquives >= 7) return;
+    deplacer();
+    document.getElementById('d11').textContent = phrases[Math.min(esquives, phrases.length - 1)];
+    SONS.bruh();
+    esquives++;
+    if(esquives >= 7) appliquerMensonge(0);
+  }
+  function appliquerMensonge(i){
+    btn.style.background = MENSONGES[i].fond;
+    btn.style.color = MENSONGES[i].couleur;
+    btn.textContent = MENSONGES[i].txt;
+  }
+  btn.addEventListener('mouseenter', fuir);
+  btn.addEventListener('touchstart', function(e){ if(esquives < 7){ e.preventDefault(); fuir(); } }, {passive:false});
+  btn.addEventListener('click', function(){
+    if(esquives < 7){ fuir(); return; }
+
+    // il a promis de plus bouger. il ment trois fois de suite.
+    if(mensonges < MENSONGES.length - 1){
+      deplacer();
+      SONS.vineBoom();
+      document.getElementById('d11').innerHTML = MENSONGES[mensonges].apres;
+      mensonges++;
+      appliquerMensonge(mensonges);
+      return;
+    }
+    if(mensonges === MENSONGES.length - 1){
+      // le tout dernier : il avoue, et il ne bouge vraiment plus
+      mensonges++;
+      SONS.erreur();
+      document.getElementById('d11').innerHTML = MENSONGES[MENSONGES.length - 1].apres;
+      btn.textContent = "🎁 OUVRIR LE CADEAU";
+      btn.style.background = '#ffe600';
+      btn.style.color = '#000';
+      return;
+    }
+
+    SONS.fanfare(); confettis(110);
+    document.getElementById('b11').style.display = 'block';
+    document.getElementById('d11').textContent = "Cadeau récupéré. Contenu du cadeau : ce site. Voilà. C'est le cadeau. Désolé.";
+    modale("🎁 CADEAU DÉBLOQUÉ",
+      "Bravo, t'as vaincu un bouton qui t'a menti trois fois. Ton cadeau officiel c'est ce site : " +
+      "coût 0€, temps de fabrication 6-7 heures, valeur sentimentale illimitée. (Le vrai cadeau arrive en vrai, panique pas.)");
+  });
+})();
+
+document.getElementById('b11').onclick = function(){ aller(12); };
+
+/* réinitialise l'esquive du cadeau — appelé par la relance dans final.js */
+function resetCadeau(){
+  esquives = 0;
+  mensonges = 0;
+}
