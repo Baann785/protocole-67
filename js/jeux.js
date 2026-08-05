@@ -585,46 +585,40 @@ function refuserPuisSurprise(){
   document.getElementById('indiceMdp').textContent = '';
   const liste = document.getElementById('listeRegles');
 
-  /* Le chargement est long exprès : c'est là qu'on passe les deux
-     enregistrements où elle chante. Elle a aucun moyen de les couper. */
   liste.innerHTML = '<div class="regle"><span class="etat">⏳</span><span>Vérification du mot de passe…</span></div>';
-  SONS.bip();
+  SONS.logo();   // jingle de banque, juste avant de tout lui refuser
 
   setTimeout(function(){
-    liste.innerHTML = '<div class="regle"><span class="etat">🎤</span><span>' +
-      'Analyse vocale de sécurité en cours. Nous avons retrouvé ceci dans nos archives. ' +
-      'Merci de patienter pendant la lecture intégrale.</span></div>';
-    tape(document.getElementById('d7'), "Écoute bien. C'est toi. On avait gardé ça au chaud.");
+    SONS.erreur();
+    liste.innerHTML = '<div class="regle"><span class="etat">❌</span><span><b>REFUSÉ.</b> ' +
+      'Mot de passe trop fort. Le serveur a pris peur. Merci de tout recommencer depuis le début.</span></div>';
+    document.body.classList.add('secousse');
+  }, 2300);
 
-    jouerChansons(function(){
-      SONS.erreur();
-      liste.innerHTML = '<div class="regle"><span class="etat">❌</span><span><b>REFUSÉ.</b> ' +
-        'Voix authentifiée, mot de passe trop fort. Le serveur a pris peur. ' +
-        'Merci de tout recommencer depuis le début.</span></div>';
-      document.body.classList.add('secousse');
+  setTimeout(function(){
+    SONS.vineBoom();
+    liste.innerHTML = '<div class="regle"><span class="etat">😌</span><span>' +
+      'Nan je déconne, tu recommences pas. C\'est bon.</span></div>';
+  }, 4300);
 
-      setTimeout(function(){
-        SONS.vineBoom();
-        liste.innerHTML = '<div class="regle"><span class="etat">😌</span><span>' +
-          'Nan je déconne, tu recommences pas. C\'est bon.</span></div>';
-      }, 2000);
-
-      setTimeout(function(){
-        SONS.airhorn();
-        mdpSurprise = true;
-        mdpFini = false;
-        tape(document.getElementById('d7'),
-          "Par contre. Le service juridique vient d'ajouter une règle. Une seule. La dernière. Promis.");
-        majRegles();
-        // si elle galère sur la surprise, l'aide revient vite
-        chronoIndice2 = setTimeout(function(){
-          if(!mdpFini) document.getElementById('bIndice').style.display = 'block';
-        }, 20000);
-      }, 3800);
-    });
-  }, 1400);
+  setTimeout(function(){
+    SONS.airhorn();
+    mdpSurprise = true;
+    mdpFini = false;
+    tape(document.getElementById('d7'),
+      "Par contre. Le service juridique vient d'ajouter une règle. Une seule. La dernière. Promis.");
+    majRegles();
+    // si elle galère sur la surprise, l'aide revient vite
+    chronoIndice2 = setTimeout(function(){
+      if(!mdpFini) document.getElementById('bIndice').style.display = 'block';
+    }, 20000);
+  }, 6100);
 }
 
+/* Vérification FINALE, une fois la règle « swanetneo » satisfaite.
+   C'est là qu'on passe les deux enregistrements où elle chante : elle croit
+   avoir fini, elle est coincée devant le chargement, et il n'y a pas de
+   bouton pour couper. */
 function accepterMdp(){
   mdpFini = true;
   clearTimeout(chronoIndice); clearTimeout(chronoIndice2);
@@ -632,14 +626,28 @@ function accepterMdp(){
   document.getElementById('bMoai').style.display = 'none';
   document.getElementById('bCrousty').style.display = 'none';
   document.getElementById('indiceMdp').textContent = '';
-  SONS.aura(); confettis(110);
-  document.getElementById('listeRegles').innerHTML =
-    '<div class="regle ok"><span class="etat">🏆</span><span>Mot de passe accepté. Pour de vrai. ' +
-    'On va jamais s\'en servir, c\'était juste pour te voir souffrir.</span></div>';
-  document.getElementById('b7').style.display = 'block';
-  tape(document.getElementById('d7'),
-    "15 règles. Dont une qui annulait la précédente, un faux refus et une règle rajoutée en douce. " +
-    "Sincèrement : la plupart des gens abandonnent à la règle 7.");
+  const liste = document.getElementById('listeRegles');
+
+  liste.innerHTML = '<div class="regle"><span class="etat">⏳</span><span>Vérification finale…</span></div>';
+  SONS.logo();
+
+  setTimeout(function(){
+    liste.innerHTML = '<div class="regle"><span class="etat">🎤</span><span>' +
+      '<b>Authentification vocale requise.</b> Nous avons retrouvé ceci dans nos archives. ' +
+      'Merci de patienter pendant la lecture intégrale. Il n\'y a pas de bouton pour arrêter.</span></div>';
+    tape(document.getElementById('d7'), "Écoute bien. C'est toi. On avait gardé ça au chaud depuis le début.");
+
+    jouerChansons(function(){
+      SONS.aura(); confettis(110);
+      liste.innerHTML =
+        '<div class="regle ok"><span class="etat">🏆</span><span><b>Voix authentifiée. Mot de passe accepté.</b> ' +
+        'Pour de vrai. On va jamais s\'en servir, c\'était juste pour te voir souffrir.</span></div>';
+      document.getElementById('b7').style.display = 'block';
+      tape(document.getElementById('d7'),
+        "15 règles, une règle qui en annulait une autre, un faux refus, une règle rajoutée en douce " +
+        "et ta propre voix en guise de bouquet final. La plupart des gens abandonnent à la règle 7.");
+    });
+  }, 1900);
 }
 
 document.getElementById('inputMdp').addEventListener('input', majRegles);

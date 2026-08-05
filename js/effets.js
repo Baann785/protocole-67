@@ -72,6 +72,18 @@ const POPUPS = [
   {t:"Météo France",     i:"🌡️", m:"Prévisions du jour : 100% de chances de vieillir. Bon courage.", b:"Merci"},
   {t:"Le Bon Coin",      i:"📦", m:"« Bonjour, toujours dispo ? » — non, elle a 20 ans, elle est plus dispo.", b:"Fermer"},
   {t:"Snapchat",         i:"👻", m:"Nasdas a ajouté une story : « QUI VEUT 6-7 € ? » Vous êtes 4 millions à répondre.", b:"MOI MOI MOI"},
+
+  /* --- la série gênante : celles qui la visent personnellement --- */
+  {t:"Rappel de santé",  i:"🩺", m:"Votre médecin : « le taux de six seven dans votre sang reste préoccupant. »", b:"Je gère"},
+  {t:"Groupe famille",   i:"👨‍👩‍👧", m:"Ton petit cousin de 9 ans vient d'expliquer le 6-7 à toute la table. Tu as hoché la tête comme si tu savais.", b:"J'assume"},
+  {t:"Rapport d'incident", i:"📋", m:"Vous avez prononcé « six seven » à voix haute pendant un moment sérieux. 6-7 personnes ont entendu.", b:"Et alors"},
+  {t:"Historique Google",i:"🔎", m:"Recherche récente : « est-ce que le tasty crousty revient ». 6-7 fois cette semaine. Toujours non.", b:"J'espère encore"},
+  {t:"Temps d'écran",    i:"📱", m:"6-7 heures aujourd'hui. On a arrêté de compter par respect pour toi.", b:"Ignorer"},
+  {t:"Message d'un ami", i:"💬", m:"« elle dit encore six seven… à 20 ans… » — quelqu'un, quelque part, en ce moment même.", b:"Ratio"},
+  {t:"Service client McDo", i:"🥪", m:"Votre réclamation concernant le Tasty Crousty a bien été reçue. Elle fait 6 pages. La réponse est non.", b:"Faire appel"},
+  {t:"Spotify Wrapped",  i:"🎧", m:"Votre son le plus écouté cette année dure 6 secondes et vient d'un edit. Bravo.", b:"Partager"},
+  {t:"Rappel gênant",    i:"😬", m:"Souvenir d'il y a 6-7 ans : cette story que tu as postée à 3h et supprimée à 3h04. On l'a.", b:"Supprimer (ça marchera pas)"},
+  {t:"Note du prof",     i:"📝", m:"« Élève brillante mais dit six seven au milieu des exposés. » Moyenne : 6,7/20.", b:"Injuste"},
   {t:"YouTube",          i:"▶️", m:"Swan et Néo viennent de poster : « 24H DANS UN SITE D'ANNIVERSAIRE ». 12 M de vues.", b:"S'abonner"},
   {t:"McDo",             i:"🥪", m:"Rupture de stock : Tasty Crousty. Depuis 6-7 ans. Ça reviendra jamais.", b:"Deuil"},
   {t:"Uber Eats",        i:"🛵", m:"Votre commande arrive dans 6-7 min. Le livreur est à Marseille. Vous non.", b:"Suivre"}

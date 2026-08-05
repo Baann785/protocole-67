@@ -61,6 +61,21 @@ const SONS = {
   /* la petite mélodie de Fort Boyard, façon Père Fouras */
   boyard(){ [392,440,494,523,494,440,392].forEach(function(f,i){
       setTimeout(function(){ note(f,.22,'triangle',.24); }, i*160); }); },
+  /* Logo sonore « institutionnel » : balayage montant, motif de 3 notes,
+     puis une queue scintillante. Le genre de jingle qu'on entend au démarrage
+     d'un logiciel de banque — d'où l'effet comique quand il précède un refus. */
+  logo(){
+    note(170, .6, 'sine', .16, 880);
+    [[0,523],[190,784],[380,1047]].forEach(function(x){
+      setTimeout(function(){
+        note(x[1], .55, 'triangle', .2);
+        note(x[1] * 2, .55, 'sine', .05);
+      }, 260 + x[0]);
+    });
+    for(let i = 0; i < 5; i++){
+      setTimeout(function(){ note(1568 + i * 210, .4, 'sine', .045); }, 780 + i * 75);
+    }
+  },
   bip(){ note(1400,.05,'square',.12); },
   pad(i){ note([262,330,392,523][i], .34, 'square', .22); },
   pop(){ note(700,.09,'triangle',.3,1100); },
