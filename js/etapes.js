@@ -37,6 +37,15 @@ ECRANS[1] = function(){
     "Avant tout : on doit vérifier que t'es bien la bonne personne. Tape ton prénom. Et mens pas, on a des moyens.");
   setTimeout(function(){ document.getElementById('inputNom').focus(); }, 900);
 };
+/* Le prénom retenu ne doit JAMAIS contenir d'espace : il est réinjecté dans
+   l'épreuve du mot de passe, où une règle exige le prénom et une autre interdit
+   les espaces. Un « Marie Claire » rendrait l'épreuve mathématiquement insoluble.
+   On ne garde donc que le premier mot. */
+function nomPropre(saisie){
+  const mot = saisie.trim().split(/\s+/)[0] || '';
+  return mot.charAt(0).toUpperCase() + mot.slice(1);
+}
+
 function validerNom(){
   const inp = document.getElementById('inputNom');
   const val = inp.value.trim();
@@ -48,7 +57,7 @@ function validerNom(){
   essaisNom++;
 
   if(ok){
-    ETAT.nom = val.charAt(0).toUpperCase() + val.slice(1);
+    ETAT.nom = nomPropre(val);
     SONS.aura(); confettis(80);
     tape(document.getElementById('d1'),
       "…Vérification… ✅ C'est bien toi. On t'attendait. Le protocole peut commencer.");
@@ -66,7 +75,7 @@ function validerNom(){
                     " et ça a " + CONFIG.age + " ans aujourd'hui.";
     tape(document.getElementById('d1'), "Sérieusement ? Tu connais même pas ton propre prénom ? C'est inquiétant.");
   }else{
-    ETAT.nom = val.charAt(0).toUpperCase() + val.slice(1);
+    ETAT.nom = nomPropre(val);
     SONS.erreur();
     p.textContent = '→ Bon. On te laisse passer sous le nom de "' + ETAT.nom + '". Mais on sait que c\'est faux.';
     tape(document.getElementById('d1'), "Ok j'abandonne. Passe. De toute façon le site est nul, tu perds rien.");

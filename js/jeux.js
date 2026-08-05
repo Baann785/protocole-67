@@ -12,10 +12,12 @@
 
 /* ============================================================
    4 — ÉPREUVE 1 : RITUEL 6-7
-   Escalade : à partir de 55 clics le bouton rétrécit et se déplace,
-   et à 66 il fait semblant de tout remettre à zéro.
+   Escalade : le bouton rétrécit et se balade sur TOUTE la page au fil
+   des clics. Et au 67e du premier tour, le compteur saute directement
+   à 68 : « t'as loupé le 67, on recommence ». Le 2e tour est honnête —
+   le bouton ne bouge plus et le compte s'arrête bien à 67.
    ============================================================ */
-let n67 = 0, ritOK = false, ritGele = false, fausseRAZ = false;
+let n67 = 0, ritOK = false, ritGele = false, tour67 = 1;
 ECRANS[4] = function(){
   tape(document.getElementById('d4'),
     "Première épreuve. Appuie 67 fois sur le bouton. Pourquoi ? Aucune raison. C'est ça la beauté du truc.");
@@ -23,71 +25,112 @@ ECRANS[4] = function(){
 const paliers67 = {
   1:"1. Il n'y a plus de retour en arrière.",
   5:"5. Tu commences déjà à te demander ce que tu fous là.",
-  10:"10. Ton index chauffe. Wesh alors.",
+  12:"12. ⚠️ Le bouton commence à bouger. Non, c'est pas ton écran.",
   17:"17. À ce stade, arrêter serait un échec personnel.",
   25:"25. Nasdas distribue des billets, moi je distribue des clics. Chacun son truc.",
   33:"33. Mi-parcours. « Je suis pas venue ici pour souffrir, OK ? » Bah si.",
   42:"42. La réponse à tout. Mais la vraie réponse c'est 67.",
   50:"50 ! Plus que 17. Ta dignité, elle, est déjà partie.",
-  55:"55. ⚠️ Le bouton commence à avoir peur de toi. Il recule.",
+  55:"55. Il fuit carrément maintenant. Cours après.",
   58:"58. Pas de bras, pas de chocolat. Pas de clics, pas de Tasty Crousty.",
   60:"60. SEPT. DE. PLUS. TIENS BON.",
-  64:"64. Tu y crois. C'est mignon."
+  64:"64. Tu y crois. C'est mignon.",
+  66:"66. UN. SEUL. CLIC. Rien peut mal tourner."
 };
-/* le bouton fuit sur la dernière ligne droite */
-function retrecirBouton(){
+const PALIERS_TOUR2 = {
+  1:"1. Deuxième tour. Le bouton a promis de plus bouger. On verra.",
+  20:"20. Il bouge vraiment plus. Étonnant, pour ce site.",
+  40:"40. Tu commences à te méfier de tout, et t'as raison.",
+  60:"60. Cette fois c'est la bonne. Normalement.",
+  66:"66. Vas-y. Fais-le. On te regarde."
+};
+
+/* Le bouton rétrécit et se déplace n'importe où dans la fenêtre.
+   On utilise `transform`, pas `position:fixed` : le bouton reste dans le flux
+   du document, donc la carte ne s'effondre pas quand il part se balader. */
+function animerBouton67(){
   const btn = document.getElementById('bouton67');
-  if(n67 < 55){ btn.style.width = ''; btn.style.marginLeft = ''; btn.style.fontSize = ''; return; }
-  const p = Math.min(1, (n67 - 54) / 12);
-  btn.style.width = (100 - p * 58) + '%';
-  btn.style.marginLeft = (Math.random() * p * 55) + '%';
-  btn.style.fontSize = 'clamp(24px,' + (15 - p * 9) + 'vw,' + (120 - p * 70) + 'px)';
+  if(tour67 === 2 || n67 < 12){
+    btn.style.transform = ''; btn.style.width = ''; btn.style.fontSize = '';
+    return;
+  }
+  const p = Math.min(1, (n67 - 11) / 45);            // 0 au 12e clic → 1 au 56e
+
+  // il rétrécit d'abord, sinon il est trop large pour se déplacer horizontalement
+  btn.style.width = (100 - p * 62) + '%';
+  btn.style.fontSize = 'clamp(22px,' + (15 - p * 9) + 'vw,' + (120 - p * 72) + 'px)';
+
+  // position naturelle, puis décalage aléatoire borné à la fenêtre visible
+  btn.style.transform = 'none';
+  const r = btn.getBoundingClientRect();
+  const HAUT = 62;                                    // on passe pas sous le HUD
+  const minDx = -r.left + 8,  maxDx = window.innerWidth  - r.right  - 8;
+  const minDy = -r.top + HAUT, maxDy = window.innerHeight - r.bottom - 8;
+  const dx = (Math.random() * (maxDx - minDx) + minDx) * p;
+  const dy = (Math.random() * (maxDy - minDy) + minDy) * p;
+  btn.style.transform = 'translate(' + Math.round(dx) + 'px,' + Math.round(dy) + 'px)';
 }
+
 document.getElementById('bouton67').onclick = function(){
   if(ritOK || ritGele) return;
-  n67++; ETAT.clics67 = n67;
+  n67++; ETAT.clics67++;
   document.getElementById('compte').textContent = n67;
   SONS.sixSept();
   document.body.classList.remove('secousse');
   void document.body.offsetWidth;
   if(n67 % 10 === 0) document.body.classList.add('secousse');
   const pal = document.getElementById('palier');
-  if(paliers67[n67]) pal.textContent = paliers67[n67];
+  const table = tour67 === 1 ? paliers67 : PALIERS_TOUR2;
+  if(table[n67]) pal.textContent = table[n67];
   if(n67 % 20 === 0) SONS.vineBoom();
-  retrecirBouton();
+  animerBouton67();
 
-  /* LE moment : à 66 clics, le compteur "plante" et repart à zéro.
-     Purement cosmétique — n67 n'est jamais touché, elle ne perd rien. */
-  if(n67 === 66 && !fausseRAZ){
-    fausseRAZ = true;
+  /* LE moment : au 67e clic du premier tour, l'affichage saute à 68.
+     « T'as loupé le 67 » → on repart de zéro, pour de vrai cette fois. */
+  if(n67 >= 67 && tour67 === 1){
     ritGele = true;
     SONS.erreur();
-    document.getElementById('compte').textContent = '0';
-    document.getElementById('compteSous').textContent = '⚠️ ERREUR DE SYNCHRONISATION';
-    pal.innerHTML = "🚨 <b>ERREUR CRITIQUE.</b> Perte de connexion avec le serveur de comptage de Marseille. Compteur réinitialisé. Toutes nos excuses.";
+    document.getElementById('compte').textContent = '68';
+    document.getElementById('compteSous').textContent = '⚠️ 67 NON DÉTECTÉ';
+    pal.innerHTML = "🚨 <b>68 ?!</b> Le compteur a sauté le 67. C'est exactement le seul chiffre qui nous intéressait. " +
+                    "Comptage invalide.";
     document.body.classList.add('secousse');
+
     setTimeout(function(){
-      SONS.airhorn();
-      document.getElementById('compte').textContent = '66';
-      document.getElementById('compteSous').textContent = '/ 67 — AUCUN RACCOURCI POSSIBLE';
-      pal.innerHTML = "Nan je rigole. 😂 T'as vu ta tête. Allez, plus qu'un.";
-      ritGele = false;
+      SONS.bruh();
+      pal.innerHTML = "Faut tout recommencer. 😐 Je suis vraiment désolé. Sincèrement. Presque.";
     }, 2600);
+
+    setTimeout(function(){
+      // remise à zéro réelle, mais le bouton arrête ses bêtises
+      tour67 = 2;
+      n67 = 0;
+      ritGele = false;
+      const btn = document.getElementById('bouton67');
+      btn.style.transform = ''; btn.style.width = ''; btn.style.fontSize = '';
+      document.getElementById('compte').textContent = '0';
+      document.getElementById('compteSous').textContent = '/ 67 — DEUXIÈME TOUR (le bouton ne bougera plus)';
+      pal.innerHTML = "Par contre, promis : <b>le bouton bouge plus</b>. Et cette fois ça marchera. Vas-y.";
+      SONS.airhorn();
+    }, 5200);
     return;
   }
 
   if(n67 >= 67){
     ritOK = true;
-    this.style.width = ''; this.style.marginLeft = ''; this.style.fontSize = '';
-    pal.innerHTML = "🚨 <b>67 ATTEINT.</b> Tu viens de cliquer 67 fois sur un bouton qui rétrécissait, en encaissant un faux plantage. C'est officiel : t'es des nôtres. 🗿";
+    this.style.transform = ''; this.style.width = ''; this.style.fontSize = '';
+    document.getElementById('compteSous').textContent = '✅ 67 / 67';
+    pal.innerHTML = "🚨 <b>67 ATTEINT.</b> Pour de vrai. Tu as cliqué " + ETAT.clics67 +
+                    " fois au total sur un bouton qui fuyait et qui t'a fait tout recommencer. C'est officiel : t'es des nôtres. 🗿";
     SONS.aura(); confettis(110);
     document.body.classList.add('aura-max');
     setTimeout(function(){ document.body.classList.remove('aura-max'); }, 3500);
     document.getElementById('b4').style.display = 'block';
     this.textContent = '✅';
     modale("ÉPREUVE 1 VALIDÉE 🗿",
-      "67 clics, un bouton qui fuyait et un faux plantage encaissé sans rien dire. " + ETAT.nom +
-      ", ton niveau d'aura vient d'être réévalué à la hausse par la Banque Centrale Européenne.");
+      ETAT.clics67 + " clics au total, un bouton qui traversait l'écran et un compteur qui a sauté le 67 " +
+      "pour te faire tout refaire. " + ETAT.nom + ", ton niveau d'aura vient d'être réévalué à la hausse " +
+      "par la Banque Centrale Européenne.");
   }
 };
 document.getElementById('b4').onclick = function(){ aller(5); };
@@ -225,19 +268,25 @@ document.getElementById('b5').onclick = function(){ clearInterval(tMelange67); a
    Et si elle réussit quand même, une manche 6 secrète l'attend,
    où les boutons bougent à CHAQUE clic.
    ============================================================ */
+/* 7 manches, chacune plus rapide que la précédente. La 7e mélange les boutons
+   en plus : elle est injouable par construction. La 8e est secrète et n'existe
+   que pour punir celles qui passent la 7e. */
 const MANCHES_SIMON = [
-  {longueur:2, pas:620, flash:320, titre:"MANCHE 1 / 5 — tranquille"},
-  {longueur:3, pas:520, flash:280, titre:"MANCHE 2 / 5 — ça va encore"},
-  {longueur:4, pas:380, flash:210, titre:"MANCHE 3 / 5 — ça accélère"},
-  {longueur:6, pas:230, flash:130, titre:"MANCHE 4 / 5 — ⚠️ ça part en vrille"},
-  {longueur:7, pas:105, flash:70,  titre:"MANCHE 5 / 5 — 🚨 MODE 6-7"},
-  {longueur:9, pas:75,  flash:55,  titre:"MANCHE 6 / 5 — 💀 MODE NASDAS (secrète)"}
+  {longueur:2,  pas:640, flash:330, titre:"MANCHE 1 / 7 — tranquille"},
+  {longueur:3,  pas:520, flash:280, titre:"MANCHE 2 / 7 — ça va encore"},
+  {longueur:4,  pas:420, flash:230, titre:"MANCHE 3 / 7 — ça accélère"},
+  {longueur:5,  pas:330, flash:180, titre:"MANCHE 4 / 7 — ça devient sérieux"},
+  {longueur:6,  pas:245, flash:135, titre:"MANCHE 5 / 7 — ⚠️ ça part en vrille"},
+  {longueur:7,  pas:165, flash:95,  titre:"MANCHE 6 / 7 — 🔥 plus vite que ton cerveau"},
+  {longueur:8,  pas:100, flash:60,  titre:"MANCHE 7 / 7 — 🚨 MODE 6-7", melange:true},
+  {longueur:10, pas:70,  flash:45,  titre:"MANCHE 8 / 7 — 💀 MODE NASDAS (secrète)", melange:true, chaque:true}
 ];
+const DERNIERE_SIMON = 7;   // au-delà, c'est la manche secrète
 let seqSimon = [], posSimon = 0, mancheSimon = 0, simonVerrou = true;
 
 ECRANS[6] = function(){
   tape(document.getElementById('d6'),
-    "Test de mémoire. Je joue une séquence, tu la répètes. 5 manches. Ça va bien se passer. (non)");
+    "Test de mémoire. Je joue une séquence, tu la répètes. 7 manches, et ça accélère à chaque fois. Ça va bien se passer. (non)");
   seqSimon = []; posSimon = 0; mancheSimon = 0; ETAT.erreursSimon = 0; simonVerrou = true;
   ETAT.mancheSimonMax = 0;
   rangerPads();
@@ -281,12 +330,12 @@ function jouerSequence(){
   });
   setTimeout(function(){
     simonVerrou = false;
-    if(mancheSimon >= 6){
+    if(mancheSimon > DERNIERE_SIMON){
       melangerPads();
       document.getElementById('r6').innerHTML =
         "À toi. Et cette fois <b>les boutons bougent à chaque clic</b>. 💀";
       SONS.vineBoom();
-    }else if(mancheSimon === 5){
+    }else if(mancheSimon === DERNIERE_SIMON){
       melangerPads();
       document.getElementById('r6').innerHTML = "À toi. Ah, et <b>j'ai mélangé les boutons</b>. Bonne chance. 🙂";
       SONS.vineBoom();
@@ -323,32 +372,32 @@ Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
     if(simonVerrou) return;
     const i = +p.dataset.i;
     flashPad(i, 180);
-    if(mancheSimon >= 6) melangerPads();   // mode Nasdas : ça bouge à chaque clic
+    if(MANCHES_SIMON[mancheSimon - 1].chaque) melangerPads();   // mode Nasdas : ça bouge à chaque clic
 
     if(i === seqSimon[posSimon]){
       posSimon++;
       if(posSimon < seqSimon.length) return;
       simonVerrou = true;
 
-      if(mancheSimon >= 6){
+      if(mancheSimon > DERNIERE_SIMON){
         // elle a battu la manche secrète. On s'incline.
-        finirSimon("👑 <b>MANCHE 6 RÉUSSIE.</b> 9 signaux, 75 ms, les boutons qui bougent à chaque clic. " +
+        finirSimon("👑 <b>MANCHE 8 RÉUSSIE.</b> 10 signaux, 70 ms, les boutons qui bougent à chaque clic. " +
                    "On sait pas ce que t'es, mais c'est pas humain.");
         SONS.aura(); confettis(120);
         toast('👑 MODE NASDAS VAINCU');
         secret('simon6');
         modale("👑 LÉGENDE VIVANTE",
-          "Personne, absolument personne, n'était censé passer la manche 6. Elle existait juste pour punir " +
-          "les gens trop forts à la manche 5. " + ETAT.nom + ", tu as cassé le jeu. Respect éternel.");
+          "Personne, absolument personne, n'était censé passer la manche 8. Elle existait juste pour punir " +
+          "les gens trop forts à la manche 7. " + ETAT.nom + ", tu as cassé le jeu. Respect éternel.");
         return;
       }
-      if(mancheSimon === 5){
+      if(mancheSimon === DERNIERE_SIMON){
         // récompense empoisonnée : une manche de plus
         SONS.airhorn();
         document.getElementById('r6').innerHTML =
-          "🏆 <b>MANCHE 5 RÉUSSIE.</b> C'était censé être impossible… donc on a déverrouillé la <b>manche 6 secrète</b>. " +
+          "🏆 <b>MANCHE 7 RÉUSSIE.</b> C'était censé être impossible… donc on a déverrouillé la <b>manche 8 secrète</b>. " +
           "Désolé. Tu l'as cherché.";
-        setTimeout(function(){ lancerManche(6); }, 3000);
+        setTimeout(function(){ lancerManche(DERNIERE_SIMON + 1); }, 3000);
         return;
       }
       document.getElementById('r6').textContent = pioche([
@@ -364,29 +413,29 @@ Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
       simonVerrou = true;
       rangerPads();
 
-      if(mancheSimon >= 6){
-        finirSimon("Raté — mais tu avais déjà battu la manche 5, et ça personne le fait. " +
-                   "<b>La manche 6 était une punition, pas une épreuve.</b> Passe, tu l'as mérité.");
+      if(mancheSimon > DERNIERE_SIMON){
+        finirSimon("Raté — mais tu avais déjà battu la manche 7, et ça personne le fait. " +
+                   "<b>La manche 8 était une punition, pas une épreuve.</b> Passe, tu l'as mérité.");
         SONS.fanfare(); confettis(90);
         return;
       }
-      // la manche 5 est injouable par construction : la moindre erreur la libère
-      if(mancheSimon >= 5){
-        finirSimon("Raté. Évidemment. <b>C'était impossible</b> : 7 signaux en une seconde et les boutons qui bougent. " +
-                   "Personne y arrive. On voulait juste voir ta tête. Passe.");
+      // la manche 7 est injouable par construction : la moindre erreur la libère
+      if(mancheSimon >= DERNIERE_SIMON){
+        finirSimon("Raté. Évidemment. <b>C'était impossible</b> : 8 signaux en moins d'une seconde et les boutons " +
+                   "qui changent de place. Personne y arrive. On voulait juste voir ta tête. Passe.");
         SONS.erreur();
         return;
       }
-      if(ETAT.erreursSimon >= 5){
-        finirSimon("5 erreurs. Bon. <b>On te laisse passer par pitié.</b> Joyeux anniversaire quand même.");
+      if(ETAT.erreursSimon >= 7){
+        finirSimon("7 erreurs. Bon. <b>On te laisse passer par pitié.</b> Joyeux anniversaire quand même.");
         SONS.erreur();
         return;
       }
       document.getElementById('r6').textContent = pioche([
-        "Raté. Erreur " + ETAT.erreursSimon + "/5. On refait la même manche.",
-        "Non. C'était pas ça du tout. Erreur " + ETAT.erreursSimon + "/5.",
-        "Aïe. Erreur " + ETAT.erreursSimon + "/5. Concentre-toi deux secondes.",
-        "Erreur " + ETAT.erreursSimon + "/5. Tu veux qu'on ralentisse ? Non."
+        "Raté. Erreur " + ETAT.erreursSimon + "/7. On refait la même manche.",
+        "Non. C'était pas ça du tout. Erreur " + ETAT.erreursSimon + "/7.",
+        "Aïe. Erreur " + ETAT.erreursSimon + "/7. Concentre-toi deux secondes.",
+        "Erreur " + ETAT.erreursSimon + "/7. Tu veux qu'on ralentisse ? Non."
       ]);
       setTimeout(function(){ lancerManche(mancheSimon); }, 1200);
     }
@@ -518,34 +567,44 @@ function refuserPuisSurprise(){
   document.getElementById('indiceMdp').textContent = '';
   const liste = document.getElementById('listeRegles');
 
+  /* Le chargement est long exprès : c'est là qu'on passe les deux
+     enregistrements où elle chante. Elle a aucun moyen de les couper. */
   liste.innerHTML = '<div class="regle"><span class="etat">⏳</span><span>Vérification du mot de passe…</span></div>';
   SONS.bip();
 
   setTimeout(function(){
-    SONS.erreur();
-    liste.innerHTML = '<div class="regle"><span class="etat">❌</span><span><b>REFUSÉ.</b> ' +
-      'Mot de passe trop fort. Le serveur a pris peur. Merci de tout recommencer depuis le début.</span></div>';
-    document.body.classList.add('secousse');
-  }, 1600);
+    liste.innerHTML = '<div class="regle"><span class="etat">🎤</span><span>' +
+      'Analyse vocale de sécurité en cours. Nous avons retrouvé ceci dans nos archives. ' +
+      'Merci de patienter pendant la lecture intégrale.</span></div>';
+    tape(document.getElementById('d7'), "Écoute bien. C'est toi. On avait gardé ça au chaud.");
 
-  setTimeout(function(){
-    SONS.vineBoom();
-    liste.innerHTML = '<div class="regle"><span class="etat">😌</span><span>' +
-      'Nan je déconne, tu recommences pas. C\'est bon.</span></div>';
-  }, 3600);
+    jouerChansons(function(){
+      SONS.erreur();
+      liste.innerHTML = '<div class="regle"><span class="etat">❌</span><span><b>REFUSÉ.</b> ' +
+        'Voix authentifiée, mot de passe trop fort. Le serveur a pris peur. ' +
+        'Merci de tout recommencer depuis le début.</span></div>';
+      document.body.classList.add('secousse');
 
-  setTimeout(function(){
-    SONS.airhorn();
-    mdpSurprise = true;
-    mdpFini = false;
-    tape(document.getElementById('d7'),
-      "Par contre. Le service juridique vient d'ajouter une règle. Une seule. La dernière. Promis.");
-    majRegles();
-    // si elle galère sur la surprise, l'aide revient vite
-    chronoIndice2 = setTimeout(function(){
-      if(!mdpFini) document.getElementById('bIndice').style.display = 'block';
-    }, 20000);
-  }, 5400);
+      setTimeout(function(){
+        SONS.vineBoom();
+        liste.innerHTML = '<div class="regle"><span class="etat">😌</span><span>' +
+          'Nan je déconne, tu recommences pas. C\'est bon.</span></div>';
+      }, 2000);
+
+      setTimeout(function(){
+        SONS.airhorn();
+        mdpSurprise = true;
+        mdpFini = false;
+        tape(document.getElementById('d7'),
+          "Par contre. Le service juridique vient d'ajouter une règle. Une seule. La dernière. Promis.");
+        majRegles();
+        // si elle galère sur la surprise, l'aide revient vite
+        chronoIndice2 = setTimeout(function(){
+          if(!mdpFini) document.getElementById('bIndice').style.display = 'block';
+        }, 20000);
+      }, 3800);
+    });
+  }, 1400);
 }
 
 function accepterMdp(){

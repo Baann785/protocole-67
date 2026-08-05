@@ -68,6 +68,41 @@ const SONS = {
       note(200+i*120,.25,'sine',.12,200+i*190); }, i*60); }
 };
 
+/* ------------------------------------------------------------
+   LES ENREGISTREMENTS DE YASS
+   Deux extraits où c'est elle qui chante. Joués pendant la fausse
+   vérification du mot de passe, l'un après l'autre.
+   ------------------------------------------------------------ */
+const CHANSONS = ['audio/yass-chante-1.ogg', 'audio/yass-chante-2.ogg'];
+
+/* .ogg n'est pas lu par Safari/iOS. On teste avant de promettre quoi que ce soit :
+   si le navigateur ne sait pas le lire, on retombe sur la séquence sans audio. */
+function lectureOggPossible(){
+  const a = document.createElement('audio');
+  return !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"'));
+}
+
+/* joue les deux extraits à la suite, puis appelle `fin`.
+   `fin` est TOUJOURS appelé, même si la lecture échoue : la suite du parcours
+   ne doit jamais dépendre du bon vouloir du navigateur. */
+function jouerChansons(fin){
+  if(!sonActif || !lectureOggPossible()){ setTimeout(fin, 3200); return; }
+
+  let i = 0, termine = false;
+  function suivante(){
+    if(termine) return;
+    if(i >= CHANSONS.length){ termine = true; fin(); return; }
+    const a = new Audio(CHANSONS[i++]);
+    a.volume = 0.9;
+    a.onended = suivante;
+    a.onerror = suivante;
+    a.play().catch(suivante);   // autoplay refusé : on enchaîne quand même
+  }
+  // filet de sécurité : si un fichier ne se charge jamais, on continue au bout de 20 s
+  setTimeout(function(){ if(!termine){ termine = true; fin(); } }, 20000);
+  suivante();
+}
+
 document.getElementById('mute').onclick = function(){
   sonActif = !sonActif;
   this.textContent = sonActif ? '🔊 SON' : '🔇 SON';
