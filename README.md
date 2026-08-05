@@ -8,12 +8,13 @@ Parcours interactif troll en 14 étapes, dont **8 épreuves jouables**. Zéro d�
 index.html          le squelette (les 14 écrans, rien d'autre)
 css/style.css       tout le style
 js/config.js        ⚠️ LE SEUL FICHIER À MODIFIER (prénoms, âge, message final)
-js/audio.js         les sons, synthétisés en Web Audio (aucun fichier audio)
+js/audio.js         bruitages + logo sonore synthétisés, et lecture des 2 enregistrements
 js/core.js          état global, machine à écrire, navigation entre écrans
 js/effets.js        confettis, popups Windows, secrets et easter eggs
 js/etapes.js        écrans 0 à 3 (boot, identité, captcha, âge)
 js/jeux.js          les 8 épreuves (écrans 4 à 11)
 js/final.js         compliments, page finale, relance — et démarre le site
+audio/              les deux extraits où Yass chante (MP3, joués à la fin du mot de passe)
 ```
 
 L'ordre des `<script>` dans `index.html` compte : chaque fichier utilise ce que le précédent a défini.
@@ -95,7 +96,7 @@ En ~1 minute le site est sur `https://TON_PSEUDO.github.io/yass-anniv/`.
 ## Notes techniques
 
 - Le son démarre au premier clic (règle des navigateurs) — le bouton 🔊 en bas à droite coupe tout.
-- Tous les sons sont générés en Web Audio : aucun fichier, aucun problème de droits.
+- Les bruitages et le logo sonore sont générés en Web Audio (aucun fichier). Seuls les deux enregistrements de Yass sont des fichiers, dans `audio/` : convertis en MP3 96 kbps mono pour être lus sur iPhone, que l'OGG ne supporte pas.
 - Les confettis sont des rectangles dessinés au canvas (pas des emojis) : plafonnés à 120 particules, et la boucle s'arrête dès que l'écran est vide.
 - **Règle absolue du ragebait** : on peut la faire rager autant qu'on veut, mais aucune épreuve ne la bloque jamais pour de bon. Chacune finit par céder — le plus tard possible, et toujours avec une vanne. Les faux plantages (compteur à 66, refus du mot de passe, rouleau qui glisse) sont purement cosmétiques : elle ne perd jamais de progression réelle.
 - Pas de popup pendant le tape-taupe, ce serait déloyal (à peine).

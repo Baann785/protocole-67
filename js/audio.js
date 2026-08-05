@@ -88,20 +88,23 @@ const SONS = {
    Deux extraits où c'est elle qui chante. Joués pendant la fausse
    vérification du mot de passe, l'un après l'autre.
    ------------------------------------------------------------ */
-const CHANSONS = ['audio/yass-chante-1.ogg', 'audio/yass-chante-2.ogg'];
+/* En MP3 et pas en OGG : l'OGG n'est pas lu par Safari/iOS, et elle ouvrira
+   probablement le site sur son téléphone. Encodés en 96 kbps mono — la source
+   est un enregistrement vocal, inutile d'alourdir le chargement. */
+const CHANSONS = ['audio/yass-chante-1.mp3', 'audio/yass-chante-2.mp3'];
 
-/* .ogg n'est pas lu par Safari/iOS. On teste avant de promettre quoi que ce soit :
-   si le navigateur ne sait pas le lire, on retombe sur la séquence sans audio. */
-function lectureOggPossible(){
+/* Le MP3 est lu partout, mais on vérifie quand même : si le navigateur dit non,
+   on enchaîne sans audio plutôt que de bloquer le parcours. */
+function lectureMp3Possible(){
   const a = document.createElement('audio');
-  return !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"'));
+  return !!(a.canPlayType && a.canPlayType('audio/mpeg'));
 }
 
 /* joue les deux extraits à la suite, puis appelle `fin`.
    `fin` est TOUJOURS appelé, même si la lecture échoue : la suite du parcours
    ne doit jamais dépendre du bon vouloir du navigateur. */
 function jouerChansons(fin){
-  if(!sonActif || !lectureOggPossible()){ setTimeout(fin, 3200); return; }
+  if(!sonActif || !lectureMp3Possible()){ setTimeout(fin, 3200); return; }
 
   let i = 0, termine = false;
   function suivante(){
