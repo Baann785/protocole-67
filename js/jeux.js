@@ -25,15 +25,14 @@ ECRANS[4] = function(){
 const paliers67 = {
   1:"1. Il n'y a plus de retour en arrière.",
   5:"5. Tu commences déjà à te demander ce que tu fous là.",
-  12:"12. ⚠️ Le bouton commence à bouger. Non, c'est pas ton écran.",
   17:"17. À ce stade, arrêter serait un échec personnel.",
   25:"25. Nasdas distribue des billets, moi je distribue des clics. Chacun son truc.",
   33:"33. Mi-parcours. « Je suis pas venue ici pour souffrir, OK ? » Bah si.",
   42:"42. La réponse à tout. Mais la vraie réponse c'est 67.",
   50:"50 ! Plus que 17. Ta dignité, elle, est déjà partie.",
-  55:"55. Il fuit carrément maintenant. Cours après.",
   58:"58. Pas de bras, pas de chocolat. Pas de clics, pas de Tasty Crousty.",
-  60:"60. SEPT. DE. PLUS. TIENS BON.",
+  60:"60. ⚠️ SEPT. DE. PLUS. …et le bouton commence à bouger. Non, c'est pas ton écran.",
+  62:"62. Il rétrécit aussi. Il joue sale sur la fin.",
   64:"64. Tu y crois. C'est mignon.",
   66:"66. UN. SEUL. CLIC. Rien peut mal tourner."
 };
@@ -45,30 +44,49 @@ const PALIERS_TOUR2 = {
   66:"66. Vas-y. Fais-le. On te regarde."
 };
 
-/* Le bouton rétrécit et se déplace n'importe où dans la fenêtre.
+const DEBUT_MOUVEMENT = 60;   // le bouton ne commence à bouger qu'à partir de là
+
+/* Le bouton rétrécit et se déplace, mais il reste CONFINÉ à la carte (plus une
+   petite marge) : il ne doit jamais sortir de l'écran ni devenir introuvable.
    On utilise `transform`, pas `position:fixed` : le bouton reste dans le flux
    du document, donc la carte ne s'effondre pas quand il part se balader. */
 function animerBouton67(){
   const btn = document.getElementById('bouton67');
-  if(tour67 === 2 || n67 < 12){
+  if(tour67 === 2 || n67 < DEBUT_MOUVEMENT){
     btn.style.transform = ''; btn.style.width = ''; btn.style.fontSize = '';
     return;
   }
-  const p = Math.min(1, (n67 - 11) / 45);            // 0 au 12e clic → 1 au 56e
+  // 60 → à peine, 67 → amplitude maximale
+  const p = Math.min(1, (n67 - DEBUT_MOUVEMENT + 1) / 7);
 
   // il rétrécit d'abord, sinon il est trop large pour se déplacer horizontalement
-  btn.style.width = (100 - p * 62) + '%';
-  btn.style.fontSize = 'clamp(22px,' + (15 - p * 9) + 'vw,' + (120 - p * 72) + 'px)';
+  btn.style.width = (100 - p * 55) + '%';
+  btn.style.fontSize = 'clamp(24px,' + (15 - p * 8) + 'vw,' + (120 - p * 62) + 'px)';
 
-  // position naturelle, puis décalage aléatoire borné à la fenêtre visible
+  // on mesure sa position naturelle une fois la nouvelle taille appliquée
   btn.style.transform = 'none';
   const r = btn.getBoundingClientRect();
-  const HAUT = 62;                                    // on passe pas sous le HUD
-  const minDx = -r.left + 8,  maxDx = window.innerWidth  - r.right  - 8;
-  const minDy = -r.top + HAUT, maxDy = window.innerHeight - r.bottom - 8;
-  const dx = (Math.random() * (maxDx - minDx) + minDx) * p;
-  const dy = (Math.random() * (maxDy - minDy) + minDy) * p;
-  btn.style.transform = 'translate(' + Math.round(dx) + 'px,' + Math.round(dy) + 'px)';
+
+  // zone autorisée : la carte, débordement de 30 px toléré, le tout rogné
+  // par la fenêtre visible (et jamais sous le HUD)
+  const carte = btn.closest('.boite') || btn.parentElement;
+  const b = carte.getBoundingClientRect();
+  const MARGE = 30, BORD = 8, HAUT = 70;
+  const zoneG = Math.max(b.left  - MARGE, BORD);
+  const zoneD = Math.min(b.right + MARGE, window.innerWidth  - BORD);
+  const zoneH = Math.max(b.top   - MARGE, HAUT);
+  const zoneB = Math.min(b.bottom+ MARGE, window.innerHeight - BORD);
+
+  // décalages possibles pour que le bouton reste entièrement dans cette zone
+  const minDx = zoneG - r.left, maxDx = zoneD - r.right;
+  const minDy = zoneH - r.top,  maxDy = zoneB - r.bottom;
+
+  function tirer(min, max){
+    if(max <= min) return 0;                       // pas la place de bouger
+    const v = (Math.random() * (max - min) + min) * p;
+    return Math.round(Math.min(max, Math.max(min, v)));   // ceinture et bretelles
+  }
+  btn.style.transform = 'translate(' + tirer(minDx, maxDx) + 'px,' + tirer(minDy, maxDy) + 'px)';
 }
 
 document.getElementById('bouton67').onclick = function(){
