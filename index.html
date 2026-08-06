@@ -286,8 +286,10 @@
         <span>📼 FICHIER DÉCHIFFRÉ</span>
         <span id="videoNom">YassSixSeven.mp4</span>
       </div>
+      <!-- pas d'attribut `poster` et preload="none" : aucune image de la vidéo
+           n'est chargée ni affichée avant qu'elle clique. Zéro spoiler. -->
       <div class="cadre" id="videoCadre">
-        <video id="videoFinale" playsinline preload="metadata" poster="video/couverture.jpg">
+        <video id="videoFinale" playsinline preload="none">
           <source src="video/yass-six-seven.mp4" type="video/mp4">
           Ton navigateur n'arrive pas à lire cette vidéo.
         </video>

@@ -88,7 +88,13 @@ const POPUPS = [
   {t:"McDo",             i:"🥪", m:"Rupture de stock : Tasty Crousty. Depuis 6-7 ans. Ça reviendra jamais.", b:"Deuil"},
   {t:"Uber Eats",        i:"🛵", m:"Votre commande arrive dans 6-7 min. Le livreur est à Marseille. Vous non.", b:"Suivre"}
 ];
+/* Coupe-circuit : pendant la scène finale, plus AUCUNE popup du parcours
+   ne doit apparaître — ni la boucle automatique, ni le détecteur d'absence,
+   ni le code secret « 67 ». La phase d'intrusion a ses propres fenêtres. */
+let popupsBloquees = false;
+
 function popup(){
+  if(popupsBloquees) return;
   const p = pioche(POPUPS);
   const d = document.createElement('div');
   d.className = 'popup';

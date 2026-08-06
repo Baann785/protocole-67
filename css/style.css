@@ -343,7 +343,7 @@ input[type=range]{width:100%;height:34px;accent-color:var(--magenta);cursor:poin
    grille, HUD, cartes, boutons roses. À la place : plein écran noir,
    terminal vert, scanlines. Rien de l'identité précédente ne subsiste.
    ============================================================ */
-body.hack{background:#000;color:#00ff41;overflow:hidden}
+body.hack{background:#000;color:#00ff41}
 body.hack::before{display:none}                        /* plus de dégradés néon */
 body.hack::after{                                       /* scanlines à la place de la grille */
   background-image:repeating-linear-gradient(0deg,rgba(0,255,65,.06) 0 1px,transparent 1px 3px);
@@ -421,7 +421,14 @@ body.hack #e14 .boite{
 .term{
   font-family:var(--mono);font-size:clamp(11px,1.9vw,15px);line-height:1.65;
   color:#00ff41;white-space:pre-wrap;word-break:break-word;
+  max-height:74vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#00ff41 #000;
+  transition:max-height .8s ease;
 }
+/* une fois la vidéo affichée, le terminal se replie pour lui laisser la place */
+.term.reduit{max-height:22vh;opacity:.65}
+.term::-webkit-scrollbar{width:8px}
+.term::-webkit-scrollbar-track{background:#000}
+.term::-webkit-scrollbar-thumb{background:#0a8c2c}
 .term .l{opacity:0;animation:apparait .12s forwards}
 @keyframes apparait{to{opacity:1}}
 .term .ok{color:#00ff41}
@@ -462,12 +469,14 @@ body.hack #e14 .boite{
   padding:7px 11px;font-size:clamp(10px,2.2vw,13px);letter-spacing:1px;
   display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
 }
-.bloc-video .cadre{position:relative;cursor:pointer}
+.bloc-video .cadre{position:relative;cursor:pointer;background:#000;min-height:clamp(190px,42vh,460px)}
 .bloc-video video{display:block;width:100%;height:auto;background:#000}
+/* le voile est OPAQUE tant qu'elle n'a pas cliqué : la vidéo ne doit rien
+   dévoiler d'elle-même avant le moment voulu */
 .bloc-video .voile{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:14px;
-  background:rgba(0,0,0,.45);color:#00ff41;font-family:var(--mono);
+  background:#000;color:#00ff41;font-family:var(--mono);
   text-shadow:0 0 14px rgba(0,255,65,.8);
 }
 .bloc-video .voile .fleche{font-size:clamp(46px,11vw,86px);animation:battement 1.1s ease-in-out infinite}

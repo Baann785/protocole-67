@@ -63,6 +63,10 @@ function armerBoutonFin(){
   b.classList.remove('glitche');
   b.textContent = 'TERMINER LE PROTOCOLE';
 
+  // à partir d'ici, plus une seule popup du parcours : on nettoie et on coupe
+  popupsBloquees = true;
+  document.querySelectorAll('.popup').forEach(function(e){ e.remove(); });
+
   let lance = false;
   function partir(){
     if(lance) return;
@@ -99,12 +103,15 @@ const MSG_ERREURS = [
   ['protocole67.exe',       'PERTE DE DONNÉES',    "6 743 fichiers en cours de lecture par un tiers."],
   ['Windows',               'ERREUR FATALE',       "Le système ne peut plus garantir votre confidentialité."]
 ];
+/* Elles arrivent en boucle et de plus en plus vite : on commence à 260 ms
+   entre chaque, on finit à 45 ms. Aucune ne se ferme, elles s'empilent
+   jusqu'à recouvrir l'écran. */
 function tempeteErreurs(){
   document.body.classList.add('secousse');
+  const TOTAL = 70;
   let n = 0;
-  const total = 22;
 
-  const t = setInterval(function(){
+  function une(){
     const m = pioche(MSG_ERREURS);
     const d = document.createElement('div');
     d.className = 'xp-err';
@@ -116,12 +123,14 @@ function tempeteErreurs(){
       '<div class="pied"><button>OK</button></div>';
     document.body.appendChild(d);
     SONS.xp();
+    n++;
 
-    if(++n >= total){
-      clearInterval(t);
-      setTimeout(glitchEcran, 700);
-    }
-  }, 150);
+    if(n >= TOTAL){ setTimeout(glitchEcran, 900); return; }
+    // accélération : 260 ms au début → 45 ms à la fin
+    const p = n / TOTAL;
+    setTimeout(une, 260 - p * 215);
+  }
+  une();
 }
 
 /* ============================================================
@@ -170,10 +179,12 @@ let intrusionLancee = false;
 ECRANS[14] = function(){ /* le contenu est piloté par la séquence ci-dessous */ };
 
 function ligne(cls, txt){
+  const t = document.getElementById('term');
   const d = document.createElement('div');
   d.className = 'l ' + (cls || '');
   d.textContent = txt;
-  document.getElementById('term').appendChild(d);
+  t.appendChild(d);
+  t.scrollTop = t.scrollHeight;      // le terminal suit toujours la dernière ligne
   return d;
 }
 
@@ -204,27 +215,40 @@ function demarrerTerminal(){
   const m = infosMachine();
   const C = CONFIG.cible;
 
-  /* --- barre de chargement texte --- */
-  function chargement(fini){
+  /* --- barre de chargement texte, réutilisable ---
+     `bloque` = pourcentage où elle stagne un moment avant de repartir */
+  function chargement(etapes, vitesse, bloque, fini){
     const l = ligne('dim', '');
     l.className = 'charge';
-    let p = 0;
-    const etapes = ['INITIALISATION', 'ACCÈS AU NOYAU', 'CONTOURNEMENT PARE-FEU',
-                    'ÉLÉVATION DE PRIVILÈGES', 'CANAL SÉCURISÉ ÉTABLI'];
+    let p = 0, pause = 0;
     const t = setInterval(function(){
-      p += 1 + alea(4);
+      if(pause > 0){ pause--; return; }
+      p += 1 + alea(3);
       if(p > 100) p = 100;
+      if(bloque && p >= bloque && p < bloque + 4){ p = bloque; pause = 34; }
       const plein = Math.round(p / 5);
       l.textContent = '[' + '█'.repeat(plein) + '░'.repeat(20 - plein) + '] ' +
                       String(p).padStart(3, ' ') + '%   ' +
-                      etapes[Math.min(etapes.length - 1, Math.floor(p / 21))];
-      if(p % 7 === 0) SONS.bip();
+                      etapes[Math.min(etapes.length - 1, Math.floor(p / (101 / etapes.length)))];
+      if(p % 9 === 0) SONS.bip();
       if(p >= 100){
         clearInterval(t);
         SONS.logo();
-        setTimeout(fini, 700);
+        setTimeout(fini, 800);
       }
-    }, 55);
+    }, vitesse);
+  }
+
+  /* --- suite de lignes de terminal --- */
+  function derouler(script, fini){
+    let i = 0;
+    (function suite(){
+      if(i >= script.length){ fini(); return; }
+      const [cls, txt, pause] = script[i++];
+      ligne(cls, txt);
+      if(txt) SONS.bip();
+      setTimeout(suite, pause);
+    })();
   }
 
   /* --- la fiche de la cible, remplie ligne par ligne --- */
@@ -235,25 +259,31 @@ function demarrerTerminal(){
     term.appendChild(box);
 
     const CHAMPS = [
-      ['PRÉNOM',        C.prenom,                                  '',        700],
-      ['NOM',           C.nom,                                     'chiffre', 900],
-      ['DATE DE NAISS.', C.naissance + '   ( ' + CONFIG.age + ' ans )', '',    700],
-      ['NATIONALITÉ',   'Française',                               '',        450],
-      ['PAYS',          C.pays,                                    '',        450],
-      ['RÉGION',        C.region,                                  '',        450],
-      ['VILLE',         C.ville,                                   '',        600],
-      ['COORDONNÉES',   C.latitude + '   ' + C.longitude,          'rouge',   900],
-      ['PRÉCISION GPS', '± 6,7 m',                                 'rouge',   500],
-      ['SYSTÈME',       m.sys,                                     '',        400],
-      ['NAVIGATEUR',    m.nav,                                     '',        400],
-      ['RÉSOLUTION',    m.ecran,                                   '',        400],
-      ['LANGUE',        m.langue + '   ·   ' + m.tactile,          '',        400],
-      ['PROCESSEUR',    m.coeurs + '   ·   RAM : ' + m.memoire,    '',        400],
-      ['FUSEAU',        m.zone,                                    '',        400],
-      ['ADRESSE MAC',   m.mac,                                     'rouge',   500],
-      ['ADRESSE IP',    '6.7.67.6',                                'rouge',   500],
-      ['NIVEAU D\'AURA', '9999  [ ERREUR DE LECTURE ]',            'rouge',   600],
-      ['STATUT',        'CIBLE PRIORITAIRE',                       'chiffre', 700]
+      ['PRÉNOM',         C.prenom,                                  '',        800],
+      ['DEUXIÈME PRÉNOM','[ CHIFFRÉ ]',                             'chiffre', 800],
+      ['NOM',            C.nom,                                     'chiffre', 950],
+      ['DATE DE NAISS.', C.naissance + '   ( ' + CONFIG.age + ' ans )', '',     900],
+      ['SIGNE',          'incompatible avec le 6-7',                '',        600],
+      ['NATIONALITÉ',    'Française',                               '',        550],
+      ['PAYS',           C.pays,                                    '',        550],
+      ['RÉGION',         C.region,                                  '',        550],
+      ['VILLE',          C.ville,                                   '',        750],
+      ['COORDONNÉES',    C.latitude + '   ' + C.longitude,          'rouge',   1000],
+      ['PRÉCISION GPS',  '± 6,7 m',                                 'rouge',   700],
+      ['DERNIER DÉPLAC.','canapé → frigo → canapé',                 '',        700],
+      ['OPÉRATEUR',      'réseau mobile · 4G',                      '',        500],
+      ['ADRESSE IP',     '6.7.67.6',                                'rouge',   600],
+      ['ADRESSE MAC',    m.mac,                                     'rouge',   600],
+      ['SYSTÈME',        m.sys,                                     '',        500],
+      ['NAVIGATEUR',     m.nav,                                     '',        500],
+      ['RÉSOLUTION',     m.ecran,                                   '',        500],
+      ['LANGUE',         m.langue + '   ·   ' + m.tactile,          '',        500],
+      ['PROCESSEUR',     m.coeurs + '   ·   RAM : ' + m.memoire,    '',        500],
+      ['FUSEAU HORAIRE', m.zone,                                    '',        550],
+      ['TEMPS D\'ÉCRAN', '6 h 7 min / jour  [ sous-estimé ]',       'rouge',   700],
+      ['NIVEAU D\'AURA', '9999  [ ERREUR DE LECTURE ]',             'rouge',   750],
+      ['TAUX DE RIZZ',   'hors échelle',                            'rouge',   700],
+      ['STATUT',         'CIBLE PRIORITAIRE',                       'chiffre', 900]
     ];
 
     let i = 0;
@@ -277,47 +307,65 @@ function demarrerTerminal(){
     })();
   }
 
-  /* --- déchiffrement final --- */
-  function dechiffrement(fini){
-    const SCRIPT = [
-      ['dim',  '', 200],
-      ['dim',  'root@6-7:~# scan --profondeur=max --cible=' + norm(C.prenom).split(' ')[0].toUpperCase(), 600],
-      ['ok',   '[  OK  ] 6 743 photos indexées', 260],
-      ['ok',   '[  OK  ] 67 conversations récupérées', 260],
-      ['ok',   '[  OK  ] 1 dossier caché : /souvenirs/genants/', 400],
-      ['err',  '[ ERR  ] Accès refusé : contenu trop gênant, même pour nous', 700],
-      ['dim',  '[  ..  ] Recherche de fichiers chiffrés…', 900],
-      ['err',  '[  !!  ] 1 FICHIER TROUVÉ — YassSixSeven.mp4', 500],
-      ['dim',  '[  ..  ] Déchiffrement AES-256 …  12%', 320],
-      ['dim',  '[  ..  ] Déchiffrement AES-256 …  41%', 320],
-      ['dim',  '[  ..  ] Déchiffrement AES-256 …  67%', 850],
-      ['warn', '[  ..  ] 67%', 850],
-      ['warn', '[  ..  ] toujours 67%', 950],
-      ['dim',  '[  ..  ] Déchiffrement AES-256 … 100%', 400],
-      ['ok',   '[  OK  ] Clé validée · signature authentique', 400],
-      ['gros', '>>> LECTURE AUTORISÉE <<<', 700]
-    ];
-    let i = 0;
-    (function suite(){
-      if(i >= SCRIPT.length){ fini(); return; }
-      const [cls, txt, pause] = SCRIPT[i++];
-      ligne(cls, txt);
-      if(txt) SONS.bip();
-      window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
-      setTimeout(suite, pause);
-    })();
-  }
+  /* ---------------- enchaînement complet ---------------- */
+  ligne('dim', 'root@6-7:~# ./intrusion --auto --cible=' + norm(C.prenom).split(' ')[0].toUpperCase());
 
-  ligne('dim', 'root@6-7:~# ./intrusion --auto');
-  chargement(function(){
-    ligne('err', '');
-    ligne('err', '>>> SESSION COMPROMISE · EXTRACTION DES DONNÉES <<<');
-    setTimeout(function(){
-      fiche(function(){
-        dechiffrement(afficherVideo);
-      });
-    }, 600);
-  });
+  // 1. connexion
+  chargement(['INITIALISATION', 'ACCÈS AU NOYAU', 'CONTOURNEMENT DU PARE-FEU',
+              'ÉLÉVATION DE PRIVILÈGES', 'CANAL SÉCURISÉ ÉTABLI'], 70, 0, function(){
+
+  derouler([
+    ['err',  '', 200],
+    ['err',  '>>> SESSION COMPROMISE <<<', 900],
+    ['dim',  'root@6-7:~# enum --appareils --reseau', 700],
+    ['ok',   '[  OK  ] Passerelle identifiée', 350],
+    ['warn', '[ WARN ] 6 appareils connectés au même réseau', 450],
+    ['dim',  '        ├─ téléphone de la cible        · actif', 300],
+    ['dim',  '        ├─ ordinateur portable          · actif', 300],
+    ['dim',  '        ├─ télévision                   · en veille', 300],
+    ['dim',  '        ├─ enceinte connectée           · à l\'écoute', 300],
+    ['dim',  '        ├─ imprimante (jamais utilisée) · hors ligne', 300],
+    ['dim',  '        └─ appareil inconnu             · ???', 700],
+    ['err',  '[ ERR  ] Le 7e appareil refuse de s\'identifier', 1000]
+  ], function(){
+
+  // 2. extraction de la fiche
+  derouler([['dim', '', 150], ['dim', 'root@6-7:~# extract --identite --profondeur=max', 700]], function(){
+  fiche(function(){
+
+  // 3. indexation des fichiers
+  derouler([
+    ['dim',  '', 150],
+    ['dim',  'root@6-7:~# scan --fichiers --tout', 700],
+    ['ok',   '[  OK  ] 6 743 photos indexées', 400],
+    ['ok',   '[  OK  ] 1 284 captures d\'écran analysées', 400],
+    ['ok',   '[  OK  ] 67 conversations récupérées', 400],
+    ['warn', '[ WARN ] 412 brouillons jamais envoyés', 600],
+    ['warn', '[ WARN ] 6 notes vocales de plus de 4 minutes', 600],
+    ['ok',   '[  OK  ] 1 dossier caché : /souvenirs/genants/', 500],
+    ['err',  '[ ERR  ] Accès refusé : contenu trop gênant, même pour nous', 900],
+    ['dim',  '[  ..  ] Recherche de fichiers chiffrés…', 1100],
+    ['dim',  '[  ..  ] Recherche de fichiers chiffrés…', 1100],
+    ['err',  '[  !!  ] 1 FICHIER TROUVÉ', 600],
+    ['err',  '[  !!  ] YassSixSeven.mp4  ·  chiffré AES-256  ·  clé inconnue', 1000]
+  ], function(){
+
+  // 4. déchiffrement, qui stagne longuement à 67%
+  derouler([['dim', '', 150], ['dim', 'root@6-7:~# decrypt YassSixSeven.mp4 --force', 600]], function(){
+  chargement(['LECTURE DE L\'EN-TÊTE', 'RECHERCHE DE LA CLÉ', 'ATTAQUE PAR DICTIONNAIRE',
+              'DÉCHIFFREMENT DU FLUX', 'RECONSTRUCTION DE L\'IMAGE'], 95, 67, function(){
+
+  derouler([
+    ['warn', '[ WARN ] Le déchiffrement a stagné à 67%. Évidemment.', 800],
+    ['ok',   '[  OK  ] Clé retrouvée : 6-7', 700],
+    ['ok',   '[  OK  ] Intégrité vérifiée · signature authentique', 700],
+    ['ok',   '[  OK  ] Durée du fichier : 2 min 44 s', 700],
+    ['dim',  '', 300],
+    ['gros', '>>> LECTURE AUTORISÉE <<<', 900]
+  ], afficherVideo);
+
+  // 7 fermetures : chargement · derouler · fiche · derouler · derouler · derouler · chargement
+  }); }); }); }); }); }); });
 }
 
 /* ============================================================
@@ -326,10 +374,12 @@ function demarrerTerminal(){
 function afficherVideo(){
   SONS.logo();
   const bloc = document.getElementById('blocVideo');
+  // le terminal se replie pour laisser toute la place à la vidéo
+  document.getElementById('term').classList.add('reduit');
   bloc.style.display = 'block';
   document.getElementById('zoneRelance').style.display = 'none';
   brancherLecteur();
-  setTimeout(function(){ bloc.scrollIntoView({behavior:'smooth', block:'center'}); }, 120);
+  setTimeout(function(){ bloc.scrollIntoView({behavior:'smooth', block:'center'}); }, 150);
 }
 
 function brancherLecteur(){
@@ -394,6 +444,8 @@ function brancherLecteur(){
 function resetIntrusion(){
   intrusionLancee = false;
   sonActif = true;
+  popupsBloquees = false;                 // le parcours normal retrouve ses popups
+  document.getElementById('term').classList.remove('reduit');
   document.body.classList.remove('hack');
   document.getElementById('noir').classList.remove('on');
   document.getElementById('glitch').classList.remove('on');
