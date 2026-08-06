@@ -264,6 +264,21 @@ input[type=range]{width:100%;height:34px;accent-color:var(--magenta);cursor:poin
 }
 
 /* ---------------- QUIZ / MEMES ---------------- */
+.score-quiz{
+  font-family:var(--impact);font-size:clamp(64px,20vw,170px);color:var(--jaune);
+  text-shadow:6px 6px 0 var(--magenta);line-height:.9;
+  transition:transform .15s,color .15s,text-shadow .15s;
+}
+.score-quiz.roule{color:#fff;text-shadow:4px 4px 0 var(--cyan)}
+.score-quiz.fige{
+  animation:figeScore .55s cubic-bezier(.2,1.7,.4,1);
+  color:var(--jaune);text-shadow:6px 6px 0 var(--magenta),0 0 60px rgba(255,230,0,.6);
+}
+@keyframes figeScore{
+  0%{transform:scale(1.6) rotate(-4deg)}
+  60%{transform:scale(.94) rotate(2deg)}
+  100%{transform:none}
+}
 .qnum{font-family:var(--mono);color:var(--cyan);letter-spacing:2px;margin-bottom:8px;font-size:12px}
 .qtxt{font-family:var(--impact);font-size:clamp(20px,4.8vw,34px);line-height:1.15;margin-bottom:22px;text-transform:uppercase}
 .rep{

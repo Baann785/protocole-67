@@ -1147,11 +1147,42 @@ function poserQuestion(){
   });
 }
 /* le faux calcul interminable */
+/* Le score s'affole avant de se figer : défilement rapide au début, de plus en
+   plus lent, et il s'arrête évidemment sur 67. */
+function roulerScore(fini){
+  const el = document.getElementById('quizScore');
+  const DUREE = 3400, debut = Date.now();
+  let prochain = 0;
+  el.classList.remove('fige');
+  el.classList.add('roule');
+
+  (function boucle(){
+    const t = Date.now() - debut;
+    if(t >= DUREE){
+      el.textContent = '67%';
+      el.classList.remove('roule');
+      el.classList.add('fige');
+      SONS.aura(); confettis(120);
+      setTimeout(fini, 700);
+      return;
+    }
+    if(t >= prochain){
+      el.textContent = alea(101) + '%';
+      SONS.bip();
+      const p = t / DUREE;                    // ralentit vers la fin
+      prochain = t + 45 + p * p * 300;
+    }
+    requestAnimationFrame(boucle);
+  })();
+}
+
 function calculerScoreQuiz(){
   document.getElementById('quizJeu').style.display = 'none';
   document.getElementById('quizFin').style.display = 'block';
   // le bouton reste caché tant que l'analyse n'est pas allée à son terme
   document.getElementById('b10').style.display = 'none';
+  document.getElementById('quizScore').textContent = '--%';
+  document.getElementById('quizScore').className = 'score-quiz';
   const d = document.getElementById('d10');
   const etapes = [
     "Calcul du score en cours…",
@@ -1164,10 +1195,15 @@ function calculerScoreQuiz(){
   let i = 0;
   (function suite(){
     if(i >= etapes.length){
-      SONS.fanfare(); confettis(120);
-      tape(d, "Score final : 67%. Peu importe tes réponses, c'était 67% depuis le début. " +
-              "Tu te connais à 67%. Les 33% restants, on les garde pour nous.",
-        function(){ document.getElementById('b10').style.display = 'block'; });
+      tape(d, "Calcul terminé. Résultat…", function(){
+        roulerScore(function(){
+          tape(d, "67%. Peu importe tes réponses, c'était 67% depuis le début. " +
+                  "Tu te connais à 67%. Les 33% restants, on les garde pour nous.",
+            function(){ document.getElementById('b10').style.display = 'block'; });
+          modale("🔢 SIX SEVEN",
+            "Six seven… finalement ce chiffre te suit jusqu'au bout, ma petite " + ETAT.nom + "…");
+        });
+      });
       return;
     }
     tape(d, etapes[i++], function(){ setTimeout(suite, 700); });
