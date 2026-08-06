@@ -17,7 +17,7 @@ const CONFIG = {
   cible: {
     prenom:    "Yasmine Jenna",
     nom:       "[ CHIFFRÉ ]",
-    naissance: "07/06/2006",
+    naissance: "07/08/2006",
     pays:      "France",
     region:    "Île-de-France",
     ville:     "Paris",

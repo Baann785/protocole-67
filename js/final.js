@@ -1,104 +1,9 @@
 /* ============================================================
-   ÉCRANS 12 & 13 — compliments, page finale, relance
+   ÉCRAN 13 — épilogue : la vraie fin, après la vidéo
    ============================================================ */
 
 /* ============================================================
-   12 — COMPLIMENTS
-   ============================================================ */
-const DEBUTS = ["t'as l'aura de","t'es officiellement","sur ma vie t'es","scientifiquement prouvé : t'es",
-  "franchement t'es","l'État confirme que t'es","d'après mes sources t'es","le Larousse te définit comme",
-  "sans exagérer t'es","les scientifiques sont formels, t'es","c'est écrit dans la Constitution : t'es",
-  "wesh j'te jure t'es","le cadastre te classe comme","d'après le dernier recensement t'es"];
-
-const MILIEUX = [
-  // — six seven —
-  "6-7 fois plus stylée que la moyenne nationale",
-  "la preuve vivante que le 6-7 peut être une personnalité",
-  "la seule à qui on pardonnerait de dire « six seven » à voix haute",
-  "classée 6-7 sur 10 par un jury qui te met 20 en vrai",
-  "le seul être humain dont l'aura se mesure en 6-7",
-  "6 fois plus drôle que la moyenne, et 7 fois plus insupportable",
-  // — tasty crousty —
-  "plus légendaire qu'un Tasty Crousty",
-  "plus rare qu'un Tasty Crousty en 2026",
-  "croustillante à l'extérieur, tasty à l'intérieur",
-  "le Tasty Crousty des êtres humains, et c'est le plus beau compliment du site",
-  "la seule chose qui manque à McDo depuis qu'ils l'ont retiré de la carte",
-  // — brainrot —
-  "le personnage principal de ton propre brainrot",
-  "l'aura farming incarné, sans même faire exprès",
-  "la raison pour laquelle Tralalero Tralala met ses plus belles chaussures",
-  "plus rizz que tout le rayon parfum de Sephora réuni",
-  "genre le sigma le plus sigma que j'ai jamais vu, sans ironie, enfin si un peu",
-  "capable de faire un aura farming juste en existant dans une pièce",
-  "la version humaine d'un edit sur fond de phonk",
-  "le Ohio de personne, le rizz de tout le monde",
-  // — gênant assumé —
-  "objectivement la personne la plus drôle de ce groupe et tu le sais très bien",
-  "quelqu'un pour qui on annulerait un plan, et ça, ça se dit pas à voix haute",
-  "la seule à qui on montre un truc débile en premier parce qu'on sait qu'elle va rire",
-  "insupportablement attachante, et c'est très gênant à écrire",
-  "la personne qu'on cite quand on raconte une anecdote à quelqu'un qui te connaît pas",
-  "la preuve qu'on peut être une catastrophe ambulante et rester la meilleure",
-  // — français —
-  "plus rare qu'un TGV à l'heure","meilleure que le wifi gratuit dans un TER",
-  "plus solide qu'un Nokia 3310 tombé du 6e étage","l'équivalent humain d'un vendredi 17h",
-  "trop drôle pour être légale dans 6-7 départements",
-  "capable de rendre un lundi matin supportable",
-  "la définition du mot « validée » dans le Larousse 2027",
-  "plus précieuse qu'un chargeur retrouvé chez quelqu'un d'autre",
-  "au-dessus du game depuis la maternelle",
-  "la raison pour laquelle le groupe tient encore debout",
-  "plus attendue que le générique de Fort Boyard",
-  "la seule à pouvoir dire « wesh alors » avec élégance",
-  "plus généreuse que Nasdas un soir de story",
-  "plus culte que Swan et Néo pour une génération entière",
-  "plus fiable qu'un « je pars dans 5 minutes »",
-  "la seule personne dont la story vaut le coup d'être regardée en entier"];
-
-const FINS = ["et ça, personne peut te l'enlever. 🗿","Certifié par 6 experts sur 7. 🧪","L'ONU a validé. 🇺🇳",
-  "Aucun débat. Dossier clos. ⚖️","+9999 aura. 🔥","Bon anniversaire au passage. 🎂",
-  "Redemande, y'en a encore. 🔁","C'est pas faux. 🛡️","Le Père Fouras approuve. 🗝️",
-  "Six seven. 🫡","Voilà. C'était gênant. Assume. 😳","Screenshot ça, tu le reliras dans 6-7 ans. 📸",
-  "Le Ministère du Brainrot a signé. 🧠","Et là normalement tu souris toute seule. 😐",
-  "Tasty. Crousty. 🥪","Nasdas t'aurait donné 50 balles pour ça. 💸"];
-
-/* 1 chance sur 6,7 : ceux-là sont sincères, c'est le contraste qui fait l'effet */
-const RARES = [
-  "🎯 RARE (1 chance sur 6,7) : T'es la seule personne pour qui je décrocherais si t'appelais sans prévenir. Et ça, dans ce monde, ça vaut de l'or. 🥹",
-  "🎯 RARE (1 chance sur 6,7) : Sans toi le groupe serait juste 6 personnes qui se regardent en silence. T'es le 7e élément. 6-7. Tout s'explique.",
-  "🎯 RARE (1 chance sur 6,7) : Tu vieillis pas, tu passes juste en version premium. Édition 20 ans, collector, tirage limité à 1 exemplaire."
-];
-
-ECRANS[12] = function(){
-  tape(document.getElementById('d12'),
-    "Épreuves terminées. Récompense : compliments illimités. Il faut en prendre au moins 3, c'est la loi.");
-};
-document.getElementById('bCompli').onclick = function(){
-  const box = document.getElementById('compliBox');
-  if(Math.random() < 1 / 6.7){
-    box.textContent = pioche(RARES);
-    box.style.borderColor = '#ff2bd6';
-    SONS.aura(); confettis(90);
-  }else{
-    box.textContent = ETAT.nom + ", " + pioche(DEBUTS) + " " + pioche(MILIEUX) + ". " + pioche(FINS);
-    box.style.borderColor = '#ffe600';
-    SONS.rizz();
-  }
-  box.style.transform = 'scale(1.04)';
-  setTimeout(function(){ box.style.transform = 'scale(1)'; }, 160);
-  ETAT.compliments++;
-  if(ETAT.compliments >= 3){
-    const b = document.getElementById('b12');
-    b.disabled = false;
-    b.textContent = "C'EST BON J'EN AI ASSEZ";
-  }
-};
-/* Le tout dernier bouton « normal » du site. C'est lui qui déraille. */
-document.getElementById('b12').onclick = function(){ armerBoutonFin(this); };
-
-/* ============================================================
-   14 — ÉPILOGUE
+   13 — ÉPILOGUE
    La vraie fin, après l'intrusion et la vidéo. Musique douce en fond,
    message sincère, puis le récapitulatif et le bouton pour relancer.
    ============================================================ */
@@ -110,7 +15,7 @@ function reveler(id, delai){
   }, delai);
 }
 
-ECRANS[14] = function(){
+ECRANS[13] = function(){
   document.body.classList.add('epilogue');
   document.getElementById('nomEpi').textContent = ETAT.nom;
   lancerMusiqueFinale();
@@ -151,22 +56,27 @@ document.getElementById('b13').onclick = function(){
   mdpFini = false; mdpSurprise = false; niveauMax = 0;
   clearInterval(tMelange67); resetCadeau(); rangerPads(); animerBouton67(); stopVoix(); resetIntrusion();
   ETAT.clics67 = 0; ETAT.rates67 = 0; ETAT.erreursSimon = 0; ETAT.mancheSimonMax = 0; ETAT.moai = 0;
-  ETAT.indiceMdp = false; ETAT.voixEnvoyee = false; ETAT.compliments = 0;
+  ETAT.indiceMdp = false; ETAT.voixEnvoyee = false;
   ETAT.debut = Date.now();
 
   document.getElementById('compte').textContent = '0';
   document.getElementById('palier').textContent = '';
   document.getElementById('compteSous').textContent = '/ 67 — AUCUN RACCOURCI POSSIBLE';
   document.getElementById('bouton67').textContent = '6 7';
-  document.getElementById('b12').disabled = true;
-  document.getElementById('b12').textContent = "J'EN AI ASSEZ";
-  document.getElementById('compliBox').textContent = '…';
   document.getElementById('cadeau').style.cssText = '';
   document.getElementById('cadeau').textContent = '🎁 CLIQUE ICI';
   document.getElementById('bTaupe').textContent = 'DÉMARRER ▶';
   ['b4','b5','b6','b8','b9','b11'].forEach(function(id){
     document.getElementById(id).style.display = 'none';
   });
+
+  /* armerBoutonFin() écrase le onclick du bouton du cadeau et le laisse
+     « consommé ». Sans cette remise en état, il serait inerte au second tour. */
+  const bCadeau = document.getElementById('b11');
+  bCadeau.classList.remove('glitche');
+  bCadeau.textContent = 'CONTINUER';
+  bCadeau.disabled = false;
+  bCadeau.onclick = function(){ armerBoutonFin(this); };
   Array.prototype.forEach.call(document.querySelectorAll('#captchaGrid .case.on'), function(c){
     c.classList.remove('on');
   });

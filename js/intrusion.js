@@ -57,7 +57,7 @@ function infosMachine(){
    1 — LE BOUTON QUI DÉRAILLE
    ============================================================ */
 /* `b` = le bouton qui va dérailler. C'est le dernier bouton normal du site
-   (celui des compliments) : elle croit juste passer à la suite. */
+   (celui du cadeau, épreuve 8) : elle croit juste passer à la suite. */
 function armerBoutonFin(b){
   if(!b) return;
   b.disabled = false;
@@ -161,7 +161,7 @@ function glitchEcran(){
     document.body.classList.remove('secousse');
     document.getElementById('noir').classList.add('on');
     document.body.classList.add('hack');          // ← l'ancienne DA cesse d'exister
-    aller(13);
+    aller(12);
 
     // noir complet : 2,5 s de silence total
     setTimeout(function(){
@@ -175,7 +175,7 @@ function glitchEcran(){
    4 — LE TERMINAL
    ============================================================ */
 let intrusionLancee = false;
-ECRANS[13] = function(){ /* le contenu est piloté par la séquence ci-dessous */ };
+ECRANS[12] = function(){ /* le contenu est piloté par la séquence ci-dessous */ };
 
 /* Le terminal doit TOUJOURS suivre la dernière ligne tout seul : elle ne doit
    jamais avoir à toucher la souris pour voir ce qui s'écrit. On colle le
@@ -544,7 +544,7 @@ function brancherLecteur(){
         setTimeout(function(){
           document.body.classList.remove('hack');
           document.getElementById('noir').classList.remove('on');
-          aller(14);
+          aller(13);
         }, 1600);
       }, 1200);
     }, 1400);

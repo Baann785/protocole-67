@@ -1247,7 +1247,9 @@ ECRANS[11] = function(){
   });
 })();
 
-document.getElementById('b11').onclick = function(){ aller(12); };
+/* Le tout dernier bouton « normal » du site. C'est lui qui déraille
+   et fait basculer dans la scène finale (voir js/intrusion.js). */
+document.getElementById('b11').onclick = function(){ armerBoutonFin(this); };
 
 /* réinitialise l'esquive du cadeau — appelé par la relance dans final.js */
 function resetCadeau(){
