@@ -11,6 +11,12 @@ const CONFIG = {
 
   age: 20,
 
+  // Panneau de test permettant de sauter d'une épreuve à l'autre.
+  // Laisse-le sur `false` : pour tester, ajoute simplement « ?debug » à la fin
+  // de l'URL (ex. .../protocole-67/?debug). Comme ça aucun risque de l'oublier
+  // activé le jour où tu lui envoies le lien.
+  debug: false,
+
   // Le vrai message de fin — le seul moment sincère du site.
   // <b>…</b> met en jaune, <br><br> sépare les paragraphes (ils apparaissent un par un).
   messageFinal:
