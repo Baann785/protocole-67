@@ -34,20 +34,19 @@ const CONFIG = {
   // Le vrai message de fin — le seul moment sincère du site.
   // Il s'affiche APRÈS la vidéo, sur la page épilogue, avec la musique en fond.
   // <b>…</b> met en valeur, <br><br> sépare les paragraphes (ils apparaissent un par un).
+  // Date affichée sur le certificat
+  dateFete: "07 août 2026",
+
   messageFinal:
-    "Voilà. C'est fini. On peut arrêter de te mentir deux minutes.<br><br>" +
-    "T'as encaissé <b>8 épreuves</b>, un compteur qui t'a fait tout recommencer, " +
-    "15 règles de mot de passe, ta propre voix balancée à la figure et un site qui a fait " +
-    "semblant de planter. T'es allée au bout de tout ça sans rien lâcher. " +
-    "C'était un peu le but, en fait.<br><br>" +
+    "Voilà. C'est fini. Le calvaire est terminé.<br><br>" +
     "<b>Joyeux anniversaire.</b> 🎂<br><br>" +
-    "Et merci. Sincèrement. Merci pour la personne que t'es <b>tous les jours</b> — " +
-    "pas juste aujourd'hui parce que c'est ton anniversaire. " +
-    "Pour ta façon de rendre les trucs banals moins banals, de rire trop fort au mauvais moment, " +
-    "et d'être là sans qu'on ait besoin de demander.<br><br>" +
+    "Et merci. Sincèrement. Merci pour la personne que tu es tous les jours, " +
+    "pas seulement aujourd'hui parce que c'est ton anniversaire. " +
+    "Merci de nous faire autant rire et de partager ta bonne humeur, " +
+    "même s'il y a parfois quelques petites crises émotionnelles. " +
+    "Mais tu restes <b>notre Yass national</b>.<br><br>" +
     "<b>On t'aime tous.</b> Vraiment tous.<br><br>" +
-    "Et encore plus <b>Ludo</b> et <b>Baann_</b>, tes super potes, " +
-    "qui sont — c'est prouvé scientifiquement dans ce site — <b>les meilleurs</b>. 🫡<br><br>" +
-    "<span style='font-size:.8em;opacity:.7'>Passe une journée à la hauteur de ce que tu vaux. " +
-    "C'est-à-dire beaucoup.<br>6-7. 🗿</span>"
+    "Et encore plus <b>Ludo</b> et <b>Baann_</b>, tes super potes, qui sont les meilleurs. 🫡<br><br>" +
+    "Passe une journée à la hauteur de ce que tu vaux. C'est-à-dire : <b>beaucoup</b>.<br><br>" +
+    "<span style='font-size:.85em;opacity:.75'>6-7. 🗿</span>"
 };

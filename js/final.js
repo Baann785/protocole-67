@@ -116,7 +116,7 @@ ECRANS[14] = function(){
   lancerMusiqueFinale();
   const msg = document.getElementById('msgFinal');
   msg.innerHTML = '';
-  ['certif','bilan','blocSecrets','zoneRelance'].forEach(function(id){
+  ['certif','zoneRelance'].forEach(function(id){
     document.getElementById(id).style.display = 'none';
   });
 
@@ -124,14 +124,11 @@ ECRANS[14] = function(){
   let i = 0;
   (function suite(){
     if(i >= morceaux.length){
-      document.getElementById('certifNom').textContent = ETAT.nom;
-      reveler('certif', 1400);
+      document.getElementById('certifNom').textContent = ETAT.nom.toUpperCase();
+      document.getElementById('certifDate').textContent = CONFIG.dateFete;
+      reveler('certif', 1600);
       confettis(90);
-      remplirBilan();
-      reveler('bilan', 3400);
-      remplirSecrets();
-      reveler('blocSecrets', 5200);
-      reveler('zoneRelance', 6800);
+      reveler('zoneRelance', 4200);
       return;
     }
     const p = document.createElement('p');
@@ -143,34 +140,6 @@ ECRANS[14] = function(){
   })();
 };
 
-function remplirBilan(){
-  const min = Math.max(1, Math.round((Date.now() - ETAT.debut) / 60000));
-  const lignes = [
-    ["Clics sur le bouton 6-7",     ETAT.clics67],
-    ["Ratés au test optique",       ETAT.rates67],
-    ["Manche de mémoire atteinte",  ETAT.mancheSimonMax + " / 7"],
-    ["Erreurs de mémoire",          ETAT.erreursSimon],
-    ["Moaï attrapés",               ETAT.moai + " 🗿"],
-    ["Mot de passe (15 règles)",    ETAT.indiceMdp ? "avec l'indice 😔" : "toute seule 💪"],
-    ["Voix envoyée à un serveur imaginaire", ETAT.voixEnvoyee ? "oui 🎤" : "esquivée 😶"],
-    ["Compliments réclamés",        ETAT.compliments],
-    ["Temps passé sur ce site",     "~" + min + " min"]
-  ];
-  document.getElementById('bilanLignes').innerHTML = lignes.map(function(l){
-    return '<div class="l"><span>' + l[0] + '</span><span>' + l[1] + '</span></div>';
-  }).join('');
-
-  let verdict;
-  if(ETAT.mancheSimonMax > 7)
-    verdict = "Verdict : t'as débloqué le mode Nasdas. Personne débloque le mode Nasdas. On sait pas ce que t'es, mais c'est pas humain. Note finale : 6-7/10.";
-  else if(ETAT.mancheSimonMax >= 7 && !ETAT.indiceMdp)
-    verdict = "Verdict : manche 7 atteinte, 15 règles de mot de passe sans aide, faux plantage encaissé et ta propre voix renvoyée à la figure sans jeter ton téléphone. Tu es officiellement une menace. Note finale : 6-7/10.";
-  else if(ETAT.rates67 > 15)
-    verdict = "Verdict : la vue laisse à désirer, mais le cœur y était, et t'as pas abandonné. Note finale : 6-7/10.";
-  else
-    verdict = "Verdict : t'as tout fait, t'as rien compris, on t'a menti 6-7 fois, t'as adoré. Exactement le résultat attendu. Note finale : 6-7/10.";
-  document.getElementById('bilanVerdict').textContent = verdict;
-}
 
 /* ============================================================
    RELANCE — remet tout à zéro sauf les secrets déjà trouvés
@@ -179,7 +148,7 @@ document.getElementById('b13').onclick = function(){
   n67 = 0; ritOK = false; ritGele = false; tour67 = 1;
   qi = 0; essaisNom = 0;
   manche67 = 0; essaisTaupe = 0; prolongation = false;
-  mdpFini = false; mdpSurprise = false; niveauMax = 0; clicsMute = 0;
+  mdpFini = false; mdpSurprise = false; niveauMax = 0;
   clearInterval(tMelange67); resetCadeau(); rangerPads(); animerBouton67(); stopVoix(); resetIntrusion();
   ETAT.clics67 = 0; ETAT.rates67 = 0; ETAT.erreursSimon = 0; ETAT.mancheSimonMax = 0; ETAT.moai = 0;
   ETAT.indiceMdp = false; ETAT.voixEnvoyee = false; ETAT.compliments = 0;

@@ -403,7 +403,6 @@ Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
                    "On sait pas ce que t'es, mais c'est pas humain.");
         SONS.aura(); confettis(120);
         toast('👑 MODE NASDAS VAINCU');
-        secret('simon6');
         modale("👑 LÉGENDE VIVANTE",
           "Personne, absolument personne, n'était censé passer la manche 8. Elle existait juste pour punir " +
           "les gens trop forts à la manche 7. " + ETAT.nom + ", tu as cassé le jeu. Respect éternel.");

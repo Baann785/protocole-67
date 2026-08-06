@@ -3,7 +3,7 @@
    Aucun fichier son : rien à héberger, rien à charger, aucun droit à gérer.
    ============================================================ */
 
-let ctx = null, sonActif = true, clicsMute = 0;
+let ctx = null, sonActif = true;
 
 function audio(){
   if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -194,8 +194,6 @@ document.getElementById('mute').onclick = function(){
   this.textContent = sonActif ? '🔊 SON' : '🔇 SON';
   this.style.color = this.style.borderColor = sonActif ? '#c6ff00' : '#ff2bd6';
   if(musiqueFinale) musiqueFinale.volume = sonActif ? VOLUME_MUSIQUE : 0;
-  clicsMute++;
-  if(clicsMute === 7) secret('board');   // easter egg : 7 clics sur le bouton son
 };
 
 /* les navigateurs exigent un geste utilisateur avant de démarrer l'audio */
