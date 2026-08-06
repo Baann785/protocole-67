@@ -111,6 +111,15 @@ function lectureMp3Possible(){
   return !!(a.canPlayType && a.canPlayType('audio/mpeg'));
 }
 
+/* ⚠️ PIÈGE : brancher un <audio> sur le graphe Web Audio
+   (createMediaElementSource) exige que le fichier soit de même origine.
+   En ouvrant le site en local — protocole file:// — chaque fichier est une
+   origine opaque : le graphe est considéré comme « teinté » et le navigateur
+   sort du SILENCE, sans la moindre erreur.
+   Donc : analyse (et logo réactif) uniquement en http/https. En local on lit
+   le son en direct, le logo s'anime alors tout seul. */
+const ANALYSE_AUDIO_POSSIBLE = (location.protocol === 'http:' || location.protocol === 'https:');
+
 /* Joue les deux extraits à la suite, puis appelle `fin`.
 
    `surPiste(analyseur, index)` est appelé au démarrage de chaque extrait avec
@@ -137,13 +146,15 @@ function jouerChansons(fin, surPiste){
     // createMediaElementSource ne peut être appelé qu'une fois par élément :
     // on en crée un neuf à chaque extrait, donc pas de souci.
     let an = null;
-    try{
-      const c = audio();
-      an = c.createAnalyser();
-      an.fftSize = 128;
-      c.createMediaElementSource(el).connect(an);
-      an.connect(c.destination);          // sans ça, plus aucun son ne sort
-    }catch(e){ an = null; }               // navigateur récalcitrant : tant pis pour l'analyse
+    if(ANALYSE_AUDIO_POSSIBLE){
+      try{
+        const c = audio();
+        an = c.createAnalyser();
+        an.fftSize = 128;
+        c.createMediaElementSource(el).connect(an);
+        an.connect(c.destination);        // sans ça, plus aucun son ne sort
+      }catch(e){ an = null; }             // navigateur récalcitrant : tant pis pour l'analyse
+    }
 
     el.onended = suivante;
     el.onerror = suivante;

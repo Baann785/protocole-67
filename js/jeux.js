@@ -661,13 +661,13 @@ document.getElementById('b7').onclick = function(){ aller(8); };
 
 /* ============================================================
    8 — ÉPREUVE 5 : ATTRAPE LES MOAÏ
-   Escalade : à 7 Moaï on lui annonce que l'objectif était 67, puis
-   on lui impose une « prolongation » de 3 Moaï à vitesse doublée.
+   Escalade : à 7 Crousty on lui annonce que l'objectif était 67, puis
+   on lui impose une « prolongation » de 3 Crousty à vitesse doublée.
    ============================================================ */
 let scoreTaupe = 0, tempsTaupe = 20, tTaupe = null, tSpawn = null, essaisTaupe = 0, prolongation = false;
 ECRANS[8] = function(){
   tape(document.getElementById('d8'),
-    "Épreuve de réflexes. Attrape 7 Moaï 🗿 en 20 secondes. Tape sur un crâne 💀 et tu perds un point. Simple.");
+    "Épreuve de réflexes. Attrape 7 Tasty Crousty en 20 secondes. Tape sur un crâne 💀 et tu perds un point. Simple.");
   const z = document.getElementById('taupes');
   if(!z.children.length){
     for(let i = 0; i < 9; i++){
@@ -700,7 +700,7 @@ function objectifTaupe(){ return prolongation ? 3 : 7; }
 function taperTrou(t){
   const s = t.querySelector('span');
   if(!s.classList.contains('sorti')) return;
-  if(s.textContent === '🗿'){
+  if(s.classList.contains('crousty')){
     scoreTaupe++;
     SONS.pop();
   }else{
@@ -708,7 +708,7 @@ function taperTrou(t){
     SONS.bruh();
     document.getElementById('r8').textContent = pioche([
       "T'as tapé un crâne. -1. Bravo.",
-      "💀 Non. C'était pas un Moaï. -1.",
+      "💀 Non. C'était pas un Crousty. -1.",
       "Le crâne. Tu l'as vraiment tapé. -1 et un peu de honte."
     ]);
   }
@@ -734,14 +734,15 @@ function lancerTaupe(duree, vitesse, cadence){
     });
     if(!libres.length) return;
     const s = libres[alea(libres.length)].querySelector('span');
-    s.textContent = Math.random() < .78 ? '🗿' : '💀';
-    s.classList.add('sorti');
+    const bon = Math.random() < .78;
+    s.className = 'sorti ' + (bon ? 'crousty' : 'crane');
+    s.textContent = bon ? '' : '💀';        // le Crousty est une image, le crâne un emoji
     setTimeout(function(){ s.className = ''; s.textContent = ''; }, vitesse);
   }, cadence);
 }
 document.getElementById('bTaupe').onclick = function(){
   essaisTaupe++;
-  // 2e essai = les Moaï restent visibles plus longtemps, pour qu'elle finisse par y arriver
+  // 2e essai = les Crousty restent visibles plus longtemps, pour qu'elle finisse par y arriver
   lancerTaupe(20, essaisTaupe > 1 ? 1150 : 900, 620);
 };
 function finTaupe(gagne){
@@ -754,7 +755,7 @@ function finTaupe(gagne){
     ETAT.moai += scoreTaupe;
     if(gagne){
       SONS.fanfare(); confettis(110);
-      r.innerHTML = "✅ <b>Prolongation validée.</b> 10 Moaï au total. T'as fait 3 Moaï de plus que nécessaire pour un site qui te ment depuis le début. Respect.";
+      r.innerHTML = "✅ <b>Prolongation validée.</b> 10 Tasty Crousty au total. T'as fait 3 Crousty de plus que nécessaire pour un site qui te ment depuis le début. Respect.";
     }else{
       SONS.erreur();
       r.innerHTML = "Prolongation ratée. On s'en fiche complètement, c'était du bonus inventé sur le moment. <b>Épreuve validée.</b>";
@@ -767,12 +768,12 @@ function finTaupe(gagne){
     ETAT.moai = Math.max(ETAT.moai, scoreTaupe);
     // fausse annonce : l'objectif aurait été 67
     SONS.erreur();
-    r.innerHTML = "🎉 7 Moaï attrapés ! Épreuve réussie ! …<br>Attends. On relit la consigne. " +
-                  "<b>L'objectif était 6-7. Donc 67 Moaï.</b> Il t'en manque 60.";
+    r.innerHTML = "🎉 7 Tasty Crousty attrapés ! Épreuve réussie ! …<br>Attends. On relit la consigne. " +
+                  "<b>L'objectif était 6-7. Donc 67 Crousty.</b> Il t'en manque 60.";
     setTimeout(function(){
       SONS.vineBoom();
       r.innerHTML = "Nan. 7 c'est bon. 😌 J'ai eu peur hein ?<br>" +
-                    "<b>Par contre on prend 3 Moaï de plus, pour la route.</b> Et ça va deux fois plus vite.";
+                    "<b>Par contre on prend 3 Crousty de plus, pour la route.</b> Et ça va deux fois plus vite.";
       prolongation = true;
       scoreTaupe = 0;
       document.getElementById('scoreTaupe').textContent = 'SCORE : 0 / 3';

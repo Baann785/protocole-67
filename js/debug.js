@@ -20,7 +20,7 @@
   const ECRANS_NOMS = [
     'Boot', 'Prénom', 'Captcha', 'Âge',
     'É1 · Rituel 67', 'É2 · Trouve 67', 'É3 · Simon', 'É4 · Mot de passe',
-    'É5 · Moaï', 'É6 · Voix', 'É7 · Quiz', 'É8 · Cadeau',
+    'É5 · Crousty', 'É6 · Voix', 'É7 · Quiz', 'É8 · Cadeau',
     'Compliments', '💀 INTRUSION', '🎂 ÉPILOGUE'
   ];
   // bouton « continuer » de chaque écran, pour pouvoir le forcer

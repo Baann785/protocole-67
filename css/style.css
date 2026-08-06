@@ -180,8 +180,17 @@ input[type=range]{width:100%;height:34px;accent-color:var(--magenta);cursor:poin
   display:flex;align-items:center;justify-content:center;font-size:clamp(32px,11vw,56px);
   overflow:hidden;
 }
-.trou span{transform:scale(0);transition:transform .12s}
+.trou span{
+  width:88%;height:88%;transform:scale(0);transition:transform .12s;
+  display:flex;align-items:center;justify-content:center;
+  background-position:center;background-repeat:no-repeat;background-size:contain;
+}
 .trou span.sorti{transform:scale(1)}
+/* le Tasty Crousty : image détourée (fond déjà transparent) */
+.trou span.crousty{
+  background-image:url('../photos/tasty-crousty.png');
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));
+}
 .scoreLigne{display:flex;justify-content:space-between;font-family:var(--impact);
   font-size:clamp(18px,4.4vw,26px);margin-bottom:12px;letter-spacing:1px}
 .scoreLigne .t{color:var(--jaune)}
