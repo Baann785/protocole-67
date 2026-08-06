@@ -88,13 +88,22 @@ const POPUPS = [
   {t:"McDo",             i:"🥪", m:"Rupture de stock : Tasty Crousty. Depuis 6-7 ans. Ça reviendra jamais.", b:"Deuil"},
   {t:"Uber Eats",        i:"🛵", m:"Votre commande arrive dans 6-7 min. Le livreur est à Marseille. Vous non.", b:"Suivre"}
 ];
-/* Coupe-circuit : pendant la scène finale, plus AUCUNE popup du parcours
-   ne doit apparaître — ni la boucle automatique, ni le détecteur d'absence,
-   ni le code secret « 67 ». La phase d'intrusion a ses propres fenêtres. */
+/* Coupe-circuit : pendant toute la scène finale — intrusion, vidéo, épilogue —
+   plus AUCUNE popup du parcours ne doit apparaître, quelle que soit la source
+   (boucle automatique, détecteur d'absence, retour sur l'onglet).
+
+   Deux verrous complémentaires :
+   • `popupsBloquees`, posé quand le bouton du cadeau déraille ;
+   • un test sur l'écran courant et sur la DA active, qui protège aussi les
+     cas où on arrive à la fin sans passer par là (panneau de debug). */
+const PREMIER_ECRAN_FINAL = 12;      // 12 = intrusion, 13 = épilogue
 let popupsBloquees = false;
 
 function popup(){
   if(popupsBloquees) return;
+  if(ETAT.ecran >= PREMIER_ECRAN_FINAL) return;
+  if(document.body.classList.contains('hack') ||
+     document.body.classList.contains('epilogue')) return;
   const p = pioche(POPUPS);
   const d = document.createElement('div');
   d.className = 'popup';
@@ -137,6 +146,9 @@ setTimeout(function boucle(){
   const titre = document.title;
   let parti = false;
   document.addEventListener('visibilitychange', function(){
+    // pendant la scène finale, on ne l'interpelle plus : ni titre racoleur,
+    // ni popup au retour. Le ton a changé, le site aussi.
+    if(ETAT.ecran >= PREMIER_ECRAN_FINAL) return;
     if(document.hidden){ document.title = "😭 REVIENS C'EST TON ANNIV 😭"; parti = true; }
     else { document.title = titre; if(parti){ parti = false; setTimeout(popup, 800); } }
   });
