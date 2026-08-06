@@ -11,6 +11,20 @@ const CONFIG = {
 
   age: 20,
 
+  // ---- FICHE « CIBLE » affichée pendant la scène finale de faux piratage ----
+  // Tout est fictif ou anodin. Rien n'est envoyé nulle part : c'est juste du
+  // texte affiché à l'écran pour faire peur trois secondes.
+  cible: {
+    prenom:    "Yasmine Jenna",
+    nom:       "[ CHIFFRÉ ]",
+    naissance: "07/06/2006",
+    pays:      "France",
+    region:    "Île-de-France",
+    ville:     "Paris",
+    latitude:  "48.8566° N",
+    longitude: "2.3522° E"
+  },
+
   // Panneau de test permettant de sauter d'une épreuve à l'autre.
   // Laisse-le sur `false` : pour tester, ajoute simplement « ?debug » à la fin
   // de l'URL (ex. .../protocole-67/?debug). Comme ça aucun risque de l'oublier

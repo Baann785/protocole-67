@@ -76,6 +76,17 @@ const SONS = {
       setTimeout(function(){ note(1568 + i * 210, .4, 'sine', .045); }, 780 + i * 75);
     }
   },
+  /* le « ding » d'erreur Windows XP : deux tons brefs qui se chevauchent,
+     avec un coup sourd en dessous. Joué en rafale pendant le plantage final. */
+  xp(){
+    note(1245, .30, 'triangle', .30);
+    note(1661, .26, 'sine',     .16);
+    setTimeout(function(){
+      note(932,  .42, 'triangle', .26);
+      note(1245, .38, 'sine',     .13);
+    }, 105);
+    bruit(.09, .12, 2200);
+  },
   bip(){ note(1400,.05,'square',.12); },
   pad(i){ note([262,330,392,523][i], .34, 'square', .22); },
   pop(){ note(700,.09,'triangle',.3,1100); },

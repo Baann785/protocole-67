@@ -113,7 +113,7 @@ ECRANS[13] = function(){
   document.getElementById('titreFinal').textContent = "Bon. " + ETAT.nom + ".";
   const msg = document.getElementById('msgFinal');
   msg.innerHTML = '';
-  ['certif','bilan','blocSecrets','zoneRelance'].forEach(function(id){
+  ['certif','bilan','blocSecrets','zoneFin'].forEach(function(id){
     document.getElementById(id).style.display = 'none';
   });
   SONS.violon();
@@ -130,8 +130,9 @@ ECRANS[13] = function(){
       remplirSecrets();
       reveler('blocSecrets', 4000);
       setTimeout(function(){ SONS.airhorn(); confettis(110); }, 4200);
-      // …et c'est là que tout part en vrille (voir js/intrusion.js)
-      setTimeout(declencherIntrusion, 8500);
+      // le dernier bouton du site… qui ne va pas bien se passer (js/intrusion.js)
+      reveler('zoneFin', 5600);
+      setTimeout(armerBoutonFin, 5700);
       return;
     }
     const p = document.createElement('p');

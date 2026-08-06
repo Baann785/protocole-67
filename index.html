@@ -270,26 +270,32 @@
       <div id="listeSecrets"></div>
     </div>
 
+    <div class="bloc-final" id="zoneFin">
+      <button class="btn" id="bFin" style="margin-top:22px">TERMINER LE PROTOCOLE</button>
+    </div>
   </div>
 </div>
 
-<!-- ============ 14. INTRUSION (bascule de DA) ============ -->
+<!-- ============ 14. PHASE FINALE — L'ancienne DA n'existe plus ============ -->
 <div class="ecran" id="e14">
   <div class="boite">
-    <div class="etiquette">⚠️ Accès non autorisé · Session 6-7</div>
-    <div class="titre" id="titreHack">Récupération<br>de données</div>
-
-    <div class="terminal" id="terminal"></div>
+    <div class="term" id="term"></div>
 
     <div class="bloc-video" id="blocVideo" style="display:none">
       <div class="tete">
         <span>📼 FICHIER DÉCHIFFRÉ</span>
         <span id="videoNom">YassSixSeven.mp4</span>
       </div>
-      <video id="videoFinale" controls playsinline preload="metadata" poster="video/couverture.jpg">
-        <source src="video/yass-six-seven.mp4" type="video/mp4">
-        Ton navigateur n'arrive pas à lire cette vidéo.
-      </video>
+      <div class="cadre" id="videoCadre">
+        <video id="videoFinale" playsinline preload="metadata" poster="video/couverture.jpg">
+          <source src="video/yass-six-seven.mp4" type="video/mp4">
+          Ton navigateur n'arrive pas à lire cette vidéo.
+        </video>
+        <div class="voile" id="videoVoile">
+          <div class="fleche">▶</div>
+          <div class="txt">CLIQUE POUR LIRE</div>
+        </div>
+      </div>
       <div class="commandes">
         <button id="videoPlay" title="Lecture / pause">▶</button>
         <span class="tps" id="videoTemps">0:00 / 0:00</span>
@@ -299,26 +305,23 @@
           <span class="pct" id="videoVolPct">100%</span>
         </span>
       </div>
-      <div class="pied">Tu contrôles tout : lecture, pause, volume, plein écran. Personne te presse.</div>
+      <div class="pied">Lecture · pause · volume · plein écran — tu contrôles tout, personne te presse.</div>
     </div>
-
-    <div class="reaction" id="r14"></div>
 
     <div class="bloc-final" id="zoneRelance">
       <button class="btn" id="b13" style="margin-top:22px">RELANCER LE PROTOCOLE 🔁</button>
-      <div class="petit">Bon anniversaire pour de vrai. 🎂</div>
     </div>
   </div>
 </div>
 
 </main>
 
-<!-- ==================== ÉCRAN DE CRASH (transition) ==================== -->
-<div id="crash">
-  <div class="flash" id="crashFlash"></div>
-  <div class="gros" id="crashGros"></div>
-  <div class="lignes" id="crashLignes"></div>
+<!-- ==================== TRANSITIONS DE LA SCÈNE FINALE ==================== -->
+<div id="glitch">
+  <div class="rgb"></div>
+  <div class="blanc"></div>
 </div>
+<div id="noir"></div>
 
 <canvas id="confetti"></canvas>
 <button id="mute">🔊 SON</button>
