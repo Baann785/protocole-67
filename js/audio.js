@@ -3,18 +3,49 @@
    Aucun fichier son : rien à héberger, rien à charger, aucun droit à gérer.
    ============================================================ */
 
-let ctx = null, sonActif = true;
+let ctx = null, sonActif = true, sortie = null;
 
 function audio(){
-  if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if(!ctx){
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    /* Bus de sortie unique, avec un compresseur en bout de chaîne.
+       Certains effets empilent une douzaine d'oscillateurs en même temps
+       (SONS.aura, la rafale d'erreurs XP) : sans limiteur, la somme dépasse
+       1.0 et le navigateur écrête — c'est ce qui s'entend comme un
+       grésillement. Le compresseur rattrape ces pics. */
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -12;
+    comp.knee.value = 18;
+    comp.ratio.value = 8;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.2;
+
+    sortie = ctx.createGain();
+    sortie.gain.value = 0.8;
+    sortie.connect(comp);
+    comp.connect(ctx.destination);
+  }
   if(ctx.state === 'suspended') ctx.resume();
   return ctx;
+}
+
+/* Le navigateur laisse le contexte « suspendu » tant qu'il n'y a pas eu de
+   geste utilisateur. Or son horloge est gelée pendant ce temps : tout son
+   programmé avant le premier clic reste en attente au même instant, puis
+   part D'UN SEUL COUP au déblocage. C'est le craquement au lancement.
+   On ne programme donc rien tant que le contexte ne tourne pas vraiment. */
+function audioPret(){
+  const a = audio();
+  return a.state === 'running' ? a : null;
 }
 
 /* une note : fréquence, durée, timbre, volume, et éventuellement un glissando */
 function note(freq, dur, type, vol, glideTo){
   if(!sonActif) return;
-  const a = audio(), t = a.currentTime;
+  const a = audioPret();
+  if(!a) return;
+  const t = a.currentTime;
   const o = a.createOscillator(), g = a.createGain();
   o.type = type || 'sine';
   o.frequency.setValueAtTime(freq, t);
@@ -22,14 +53,18 @@ function note(freq, dur, type, vol, glideTo){
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol == null ? .3 : vol, t + .012);
   g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-  o.connect(g); g.connect(a.destination);
+  o.connect(g); g.connect(sortie);
   o.start(t); o.stop(t + dur + .05);
+  // on libère les nœuds dès la fin : sinon ils s'accumulent par milliers
+  o.onended = function(){ o.disconnect(); g.disconnect(); };
 }
 
 /* du bruit blanc filtré : sert pour les percussions et les impacts */
 function bruit(dur, vol, filtre){
   if(!sonActif) return;
-  const a = audio(), t = a.currentTime;
+  const a = audioPret();
+  if(!a) return;
+  const t = a.currentTime;
   const buf = a.createBuffer(1, Math.max(1, Math.floor(a.sampleRate * dur)), a.sampleRate);
   const d = buf.getChannelData(0);
   for(let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
@@ -38,8 +73,9 @@ function bruit(dur, vol, filtre){
   g.gain.setValueAtTime(vol == null ? .25 : vol, t);
   g.gain.exponentialRampToValueAtTime(.0001, t + dur);
   const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = filtre || 1400;
-  src.connect(f); f.connect(g); g.connect(a.destination);
+  src.connect(f); f.connect(g); g.connect(sortie);
   src.start(t);
+  src.onended = function(){ src.disconnect(); f.disconnect(); g.disconnect(); };
 }
 
 const SONS = {
@@ -207,5 +243,18 @@ document.getElementById('mute').onclick = function(){
   if(musiqueFinale) musiqueFinale.volume = sonActif ? VOLUME_MUSIQUE : 0;
 };
 
-/* les navigateurs exigent un geste utilisateur avant de démarrer l'audio */
-document.addEventListener('click', function once(){ audio(); document.removeEventListener('click', once); });
+/* Déblocage au premier geste. En phase de CAPTURE et sur pointerdown : il
+   faut que le contexte soit relancé AVANT que le gestionnaire du bouton ne
+   joue son premier son, sinon celui-ci est écarté par audioPret().
+   On garde l'écoute tant que le contexte n'est pas réellement en marche —
+   `resume()` est asynchrone et peut ne pas aboutir au premier essai. */
+(function(){
+  const gestes = ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'];
+  function debloquer(){
+    audio();
+    if(ctx && ctx.state === 'running'){
+      gestes.forEach(function(g){ document.removeEventListener(g, debloquer, true); });
+    }
+  }
+  gestes.forEach(function(g){ document.addEventListener(g, debloquer, true); });
+})();
