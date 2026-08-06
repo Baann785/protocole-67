@@ -614,16 +614,36 @@ body.epilogue .halo{
 }
 @keyframes respire{50%{transform:translateX(-50%) scale(1.09);opacity:.75}}
 
+/* Le titre et le prénom apparaissent SEULS d'abord, et restent quelques
+   secondes avant que le texte ne commence à s'écrire. */
 .titre-epi{
   font-family:'Georgia','Times New Roman',serif;font-weight:normal;
   font-size:clamp(21px,4.6vw,34px);letter-spacing:5px;text-transform:uppercase;
   color:rgba(243,231,211,.62);margin-bottom:6px;
+  opacity:0;animation:monteEpi 1.6s ease-out .2s forwards;
 }
 .nom-epi{
   font-family:'Brush Script MT','Segoe Script',cursive;
   font-size:clamp(52px,15vw,110px);line-height:1.05;margin-bottom:30px;
   color:#ffd89b;text-shadow:0 0 40px rgba(255,190,90,.45);
+  opacity:0;animation:monteEpi 1.8s ease-out 1s forwards;
 }
+@keyframes monteEpi{
+  from{opacity:0;transform:translateY(22px) scale(.96);filter:blur(6px)}
+  to  {opacity:1;transform:none;filter:blur(0)}
+}
+
+/* zone « à garder » : téléchargements */
+.titre-souvenirs{
+  font-family:'Georgia',serif;font-size:13px;letter-spacing:5px;text-transform:uppercase;
+  color:rgba(243,231,211,.45);margin:34px 0 14px;
+}
+body.epilogue #zoneSouvenirs .paire{gap:14px;max-width:620px;margin:0 auto}
+body.epilogue #zoneSouvenirs .btn{
+  width:100%;margin:0;text-align:center;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;
+}
+body.epilogue #etatDl{min-height:1.6em}
 body.epilogue #msgFinal{
   font-family:'Georgia','Times New Roman',serif;
   font-size:clamp(15px,2.6vw,20px);line-height:2;color:#e8dcc8;

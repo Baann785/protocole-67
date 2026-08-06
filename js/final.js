@@ -21,19 +21,23 @@ ECRANS[13] = function(){
   lancerMusiqueFinale();
   const msg = document.getElementById('msgFinal');
   msg.innerHTML = '';
-  ['certif','zoneRelance'].forEach(function(id){
+  ['certif','zoneSouvenirs','zoneRelance'].forEach(function(id){
     document.getElementById(id).style.display = 'none';
   });
+  document.getElementById('etatDl').textContent = '';
 
+  /* On laisse « Joyeux anniversaire <prénom> » occuper l'écran tout seul
+     pendant 3,5 s — le temps que ça se pose — avant d'écrire le message. */
   const morceaux = CONFIG.messageFinal.split('<br><br>');
   let i = 0;
-  (function suite(){
+  setTimeout(function suite(){
     if(i >= morceaux.length){
       document.getElementById('certifNom').textContent = ETAT.nom.toUpperCase();
       document.getElementById('certifDate').textContent = CONFIG.dateFete;
       reveler('certif', 1600);
       confettis(90);
-      reveler('zoneRelance', 4200);
+      reveler('zoneSouvenirs', 4000);
+      reveler('zoneRelance', 5600);
       return;
     }
     const p = document.createElement('p');
@@ -42,7 +46,7 @@ ECRANS[13] = function(){
     msg.appendChild(p);
     requestAnimationFrame(function(){ p.style.opacity = 1; });
     setTimeout(suite, 2300);
-  })();
+  }, 3500);
 };
 
 
