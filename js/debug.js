@@ -21,7 +21,7 @@
     'Boot', 'Prénom', 'Captcha', 'Âge',
     'É1 · Rituel 67', 'É2 · Trouve 67', 'É3 · Simon', 'É4 · Mot de passe',
     'É5 · Moaï', 'É6 · Voix', 'É7 · Quiz', 'É8 · Cadeau',
-    'Compliments', 'FINAL'
+    'Compliments', 'FINAL', '💀 INTRUSION'
   ];
   // bouton « continuer » de chaque écran, pour pouvoir le forcer
   const CONTINUER = {4:'b4', 5:'b5', 6:'b6', 7:'b7', 8:'b8', 9:'b9', 10:'b10', 11:'b11', 12:'b12', 13:'b13'};

@@ -270,6 +270,40 @@
       <div id="listeSecrets"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- ============ 14. INTRUSION (bascule de DA) ============ -->
+<div class="ecran" id="e14">
+  <div class="boite">
+    <div class="etiquette">⚠️ Accès non autorisé · Session 6-7</div>
+    <div class="titre" id="titreHack">Récupération<br>de données</div>
+
+    <div class="terminal" id="terminal"></div>
+
+    <div class="bloc-video" id="blocVideo" style="display:none">
+      <div class="tete">
+        <span>📼 FICHIER DÉCHIFFRÉ</span>
+        <span id="videoNom">YassSixSeven.mp4</span>
+      </div>
+      <video id="videoFinale" controls playsinline preload="metadata" poster="video/couverture.jpg">
+        <source src="video/yass-six-seven.mp4" type="video/mp4">
+        Ton navigateur n'arrive pas à lire cette vidéo.
+      </video>
+      <div class="commandes">
+        <button id="videoPlay" title="Lecture / pause">▶</button>
+        <span class="tps" id="videoTemps">0:00 / 0:00</span>
+        <span class="vol">
+          <button id="videoMute" title="Couper le son">🔊</button>
+          <input type="range" id="videoVolume" min="0" max="100" value="100" title="Volume">
+          <span class="pct" id="videoVolPct">100%</span>
+        </span>
+      </div>
+      <div class="pied">Tu contrôles tout : lecture, pause, volume, plein écran. Personne te presse.</div>
+    </div>
+
+    <div class="reaction" id="r14"></div>
+
     <div class="bloc-final" id="zoneRelance">
       <button class="btn" id="b13" style="margin-top:22px">RELANCER LE PROTOCOLE 🔁</button>
       <div class="petit">Bon anniversaire pour de vrai. 🎂</div>
@@ -278,6 +312,13 @@
 </div>
 
 </main>
+
+<!-- ==================== ÉCRAN DE CRASH (transition) ==================== -->
+<div id="crash">
+  <div class="flash" id="crashFlash"></div>
+  <div class="gros" id="crashGros"></div>
+  <div class="lignes" id="crashLignes"></div>
+</div>
 
 <canvas id="confetti"></canvas>
 <button id="mute">🔊 SON</button>
@@ -311,6 +352,7 @@
 <script src="js/effets.js"></script>
 <script src="js/etapes.js"></script>
 <script src="js/jeux.js"></script>
+<script src="js/intrusion.js"></script>
 <script src="js/final.js"></script>
 
 <!-- Panneau de test. N'affiche rien sauf si l'URL contient « ?debug ».

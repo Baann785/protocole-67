@@ -129,8 +129,9 @@ ECRANS[13] = function(){
       reveler('bilan', 2200);
       remplirSecrets();
       reveler('blocSecrets', 4000);
-      reveler('zoneRelance', 5600);
-      setTimeout(function(){ SONS.airhorn(); confettis(110); }, 5600);
+      setTimeout(function(){ SONS.airhorn(); confettis(110); }, 4200);
+      // …et c'est là que tout part en vrille (voir js/intrusion.js)
+      setTimeout(declencherIntrusion, 8500);
       return;
     }
     const p = document.createElement('p');
@@ -179,7 +180,7 @@ document.getElementById('b13').onclick = function(){
   qi = 0; essaisNom = 0;
   manche67 = 0; essaisTaupe = 0; prolongation = false;
   mdpFini = false; mdpSurprise = false; niveauMax = 0; clicsMute = 0;
-  clearInterval(tMelange67); resetCadeau(); rangerPads(); animerBouton67(); stopVoix();
+  clearInterval(tMelange67); resetCadeau(); rangerPads(); animerBouton67(); stopVoix(); resetIntrusion();
   ETAT.clics67 = 0; ETAT.rates67 = 0; ETAT.erreursSimon = 0; ETAT.mancheSimonMax = 0; ETAT.moai = 0;
   ETAT.indiceMdp = false; ETAT.voixEnvoyee = false; ETAT.compliments = 0;
   ETAT.debut = Date.now();
