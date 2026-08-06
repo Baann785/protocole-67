@@ -178,13 +178,22 @@ function glitchEcran(){
 let intrusionLancee = false;
 ECRANS[14] = function(){ /* le contenu est piloté par la séquence ci-dessous */ };
 
+/* Le terminal doit TOUJOURS suivre la dernière ligne tout seul : elle ne doit
+   jamais avoir à toucher la souris pour voir ce qui s'écrit. On colle le
+   scroll en bas après chaque ajout, et aussi pendant les animations
+   (barre de chargement, déchiffrement caractère par caractère). */
+function defiler(){
+  const t = document.getElementById('term');
+  t.scrollTop = t.scrollHeight;
+}
+
 function ligne(cls, txt){
   const t = document.getElementById('term');
   const d = document.createElement('div');
   d.className = 'l ' + (cls || '');
   d.textContent = txt;
   t.appendChild(d);
-  t.scrollTop = t.scrollHeight;      // le terminal suit toujours la dernière ligne
+  defiler();
   return d;
 }
 
@@ -221,16 +230,23 @@ function demarrerTerminal(){
     const l = ligne('dim', '');
     l.className = 'charge';
     let p = 0, pause = 0;
+    let dejaBloque = false;      // ← sans ce drapeau, la barre repasse en boucle
+                                 //   sur le seuil et reste coincée à 67% pour toujours
     const t = setInterval(function(){
       if(pause > 0){ pause--; return; }
       p += 1 + alea(3);
       if(p > 100) p = 100;
-      if(bloque && p >= bloque && p < bloque + 4){ p = bloque; pause = 34; }
+      if(bloque && !dejaBloque && p >= bloque){
+        p = bloque;
+        pause = 34;              // ~3 s d'arrêt, une seule fois
+        dejaBloque = true;
+      }
       const plein = Math.round(p / 5);
       l.textContent = '[' + '█'.repeat(plein) + '░'.repeat(20 - plein) + '] ' +
                       String(p).padStart(3, ' ') + '%   ' +
                       etapes[Math.min(etapes.length - 1, Math.floor(p / (101 / etapes.length)))];
       if(p % 9 === 0) SONS.bip();
+      defiler();
       if(p >= 100){
         clearInterval(t);
         SONS.logo();
@@ -292,7 +308,7 @@ function demarrerTerminal(){
         const f = document.createElement('div');
         f.className = 't';
         f.textContent = '└──────────────────────── EXTRACTION TERMINÉE ─────';
-        box.appendChild(f);
+        box.appendChild(f); defiler();
         setTimeout(fini, 900);
         return;
       }
@@ -302,8 +318,12 @@ function demarrerTerminal(){
       r.innerHTML = '<span class="k">' + k + ' ' + '.'.repeat(Math.max(2, 16 - k.length)) + '</span>' +
                     '<span class="v ' + cls + '"></span>';
       box.appendChild(r);
+      defiler();                    // la fiche ne passe pas par ligne() : on défile ici
       SONS.bip();
-      decrypter(r.querySelector('.v'), v, 420, function(){ setTimeout(suite, pause - 420); });
+      decrypter(r.querySelector('.v'), v, 420, function(){
+        defiler();
+        setTimeout(suite, pause - 420);
+      });
     })();
   }
 
