@@ -47,15 +47,16 @@ function toast(txt){
 
 /* ---------------- MODALE ---------------- */
 /* `image` est facultative : chemin d'une illustration affichée au-dessus du texte.
-   `style` vaut 'rond' (par défaut, recadrage circulaire — bien pour une photo)
-   ou 'pixel' (entière et non lissée — indispensable pour du pixel art). */
+   `style` vaut 'rond' (par défaut, recadrage circulaire — bien pour un portrait),
+   'pixel' (entière et non lissée — indispensable pour du pixel art)
+   ou 'large' (entière, format libre — pour une photo en paysage). */
 function modale(titre, texte, image, style){
   document.getElementById('modTitre').textContent = titre;
   document.getElementById('modTxt').textContent = texte;
   const img = document.getElementById('modImg');
   if(image){
     img.src = image;
-    img.className = (style === 'pixel') ? 'pixel' : '';
+    img.className = (style === 'pixel' || style === 'large') ? style : '';
     img.style.display = 'block';
   }else{
     img.style.display = 'none';

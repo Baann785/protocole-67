@@ -714,6 +714,11 @@ body.epilogue .petit{color:rgba(243,231,211,.35);text-align:center}
   margin:0 auto 18px;border:5px solid var(--jaune);border-radius:50%;
   box-shadow:0 0 40px rgba(255,230,0,.45);
 }
+/* photo en paysage : entière, largeur maximale, coins arrondis */
+#modImg.large{
+  width:100%;max-width:440px;aspect-ratio:auto;object-fit:contain;
+  border-radius:12px;border-width:4px;box-shadow:0 0 34px rgba(255,230,0,.35);
+}
 /* pixel art : image entière, bords nets, pas de recadrage rond */
 #modImg.pixel{
   object-fit:contain;border-radius:10px;background:#0a0018;

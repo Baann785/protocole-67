@@ -758,12 +758,15 @@ function finTaupe(gagne){
     ETAT.moai += scoreTaupe;
     if(gagne){
       SONS.fanfare(); confettis(110);
-      r.innerHTML = "✅ <b>Prolongation validée.</b> 10 Tasty Crousty au total. T'as fait 3 Crousty de plus que nécessaire pour un site qui te ment depuis le début. Respect.";
+      r.innerHTML = "✅ <b>Prolongation validée.</b> T'as fait 3 Crousty de plus que nécessaire pour un site qui te ment depuis le début. Respect.";
     }else{
       SONS.erreur();
       r.innerHTML = "Prolongation ratée. On s'en fiche complètement, c'était du bonus inventé sur le moment. <b>Épreuve validée.</b>";
     }
     document.getElementById('b8').style.display = 'block';
+    modale("👑 LA REINE DU TASTY CROUSTY",
+      ETAT.moai + " Crousty attrapés à mains nues. Le trône est à toi, personne ne conteste.",
+      "photos/tastycrousty.jpg", "large");
     return;
   }
 
