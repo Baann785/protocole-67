@@ -100,24 +100,51 @@ function lectureMp3Possible(){
   return !!(a.canPlayType && a.canPlayType('audio/mpeg'));
 }
 
-/* joue les deux extraits à la suite, puis appelle `fin`.
+/* Joue les deux extraits à la suite, puis appelle `fin`.
+
+   `surPiste(analyseur, index)` est appelé au démarrage de chaque extrait avec
+   un AnalyserNode branché dessus — c'est lui qui pilote le logo animé. Il vaut
+   `null` quand l'analyse est impossible (le logo bascule alors sur une
+   animation libre) et `(null, -1)` signale la toute fin de la lecture.
+
    `fin` est TOUJOURS appelé, même si la lecture échoue : la suite du parcours
    ne doit jamais dépendre du bon vouloir du navigateur. */
-function jouerChansons(fin){
-  if(!sonActif || !lectureMp3Possible()){ setTimeout(fin, 3200); return; }
+function jouerChansons(fin, surPiste){
+  function terminer(){ if(surPiste) surPiste(null, -1); fin(); }
+  if(!sonActif || !lectureMp3Possible()){ setTimeout(terminer, 3200); return; }
 
   let i = 0, termine = false;
   function suivante(){
     if(termine) return;
-    if(i >= CHANSONS.length){ termine = true; fin(); return; }
-    const a = new Audio(CHANSONS[i++]);
-    a.volume = 0.9;
-    a.onended = suivante;
-    a.onerror = suivante;
-    a.play().catch(suivante);   // autoplay refusé : on enchaîne quand même
+    if(i >= CHANSONS.length){ termine = true; terminer(); return; }
+
+    const index = i++;
+    const el = new Audio(CHANSONS[index]);
+    el.volume = 0.95;
+
+    // on fait passer le son par le graphe Web Audio pour pouvoir l'analyser.
+    // createMediaElementSource ne peut être appelé qu'une fois par élément :
+    // on en crée un neuf à chaque extrait, donc pas de souci.
+    let an = null;
+    try{
+      const c = audio();
+      an = c.createAnalyser();
+      an.fftSize = 128;
+      c.createMediaElementSource(el).connect(an);
+      an.connect(c.destination);          // sans ça, plus aucun son ne sort
+    }catch(e){ an = null; }               // navigateur récalcitrant : tant pis pour l'analyse
+
+    el.onended = suivante;
+    el.onerror = suivante;
+    el.play().then(function(){
+      if(surPiste) surPiste(an, index);
+    }).catch(function(){
+      if(surPiste) surPiste(null, index);
+      suivante();                          // autoplay refusé : on enchaîne quand même
+    });
   }
-  // filet de sécurité : si un fichier ne se charge jamais, on continue au bout de 20 s
-  setTimeout(function(){ if(!termine){ termine = true; fin(); } }, 20000);
+  // filet de sécurité : si un fichier ne se charge jamais, on continue au bout de 40 s
+  setTimeout(function(){ if(!termine){ termine = true; terminer(); } }, 40000);
   suivante();
 }
 

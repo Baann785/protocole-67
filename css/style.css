@@ -205,6 +205,44 @@ input[type=range]{width:100%;height:34px;accent-color:var(--magenta);cursor:poin
 }
 .pastille.rec{background:#ff2b6b;animation:clign .7s steps(2) infinite}
 
+/* ---------------- LOGO SONORE ANIMÉ ----------------
+   Piloté par le JS via la variable --n (0 = silence, 1 = fort) :
+   tout ce qui bouge est en calc() sur cette seule variable. */
+.logo-audio{
+  --n:0;
+  position:relative;width:min(240px,62vw);aspect-ratio:1;margin:4px auto 26px;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-audio .anneau{
+  position:absolute;inset:0;border-radius:50%;border:3px solid var(--cyan);
+  opacity:calc(.18 + var(--n) * .6);
+  transform:scale(calc(.58 + var(--n) * .42));
+  transition:transform .07s linear,opacity .07s linear;
+}
+.logo-audio .a2{border-color:var(--magenta);transform:scale(calc(.44 + var(--n) * .34))}
+.logo-audio .a3{border-color:var(--lime);   transform:scale(calc(.32 + var(--n) * .26))}
+.logo-audio .rotor{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent,var(--magenta),transparent 40%,var(--cyan),transparent 70%);
+  animation:tourne 3.2s linear infinite;
+  opacity:calc(.3 + var(--n) * .7);
+  -webkit-mask:radial-gradient(circle,transparent 63%,#000 65%);
+          mask:radial-gradient(circle,transparent 63%,#000 65%);
+}
+.logo-audio .noyau{
+  position:relative;z-index:2;width:38%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#fff,var(--cyan) 42%,var(--violet));
+  display:flex;align-items:center;justify-content:center;font-size:clamp(26px,8vw,48px);
+  box-shadow:0 0 calc(12px + var(--n) * 48px) var(--cyan);
+  transform:scale(calc(.9 + var(--n) * .24));
+  transition:transform .07s linear,box-shadow .07s linear;
+}
+.logo-audio .marque{
+  position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--cyan);
+  white-space:nowrap;opacity:calc(.5 + var(--n) * .5);
+}
+
 .progression{margin-bottom:16px}
 .progression .rail{height:26px;border:4px solid #fff;background:#100428;overflow:hidden}
 .progression .fill{

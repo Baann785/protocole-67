@@ -853,6 +853,7 @@ function resetVoix(){
 function stopVoix(){
   cancelAnimationFrame(rafVoix); rafVoix = null;
   clearInterval(tVoix); tVoix = null;
+  if(typeof stopLogo === 'function') stopLogo();
   if(fluxMicro){
     fluxMicro.getTracks().forEach(function(t){ t.stop(); });   // la LED du micro s'éteint ici
     fluxMicro = null;
@@ -1000,6 +1001,48 @@ function envoyerVoix(){
   })();
 }
 
+/* ---- logo sonore animé pendant la lecture des extraits ---- */
+let rafLogo = null;
+
+function stopLogo(){
+  cancelAnimationFrame(rafLogo); rafLogo = null;
+  const l = document.getElementById('logoAudio');
+  l.style.display = 'none';
+  l.style.setProperty('--n', 0);
+}
+
+/* `an` = AnalyserNode branché sur l'extrait en cours, ou null si le navigateur
+   n'a pas voulu : dans ce cas le logo pulse tout seul, personne ne verra la
+   différence. La variable CSS --n (0 → 1) pilote tout le visuel. */
+function animerLogo(an, index){
+  cancelAnimationFrame(rafLogo);
+  const logo = document.getElementById('logoAudio');
+
+  if(index === -1){ stopLogo(); return; }          // lecture terminée
+
+  logo.style.display = 'flex';
+  document.getElementById('logoMarque').textContent = 'EXTRAIT ' + (index + 1) + ' / 2 · 6-7 VOICE ID™';
+  document.getElementById('logoNoyau').textContent = index === 0 ? '🎤' : '🗿';
+
+  const data = an ? new Uint8Array(an.frequencyBinCount) : null;
+  (function boucle(){
+    let n;
+    if(an){
+      an.getByteFrequencyData(data);
+      let somme = 0;
+      for(let i = 0; i < data.length; i++) somme += data[i];
+      n = Math.min(1, (somme / data.length) / 95);              // niveau moyen → 0..1
+      niveauxVu(function(i){ return data[Math.floor(i * data.length / BARRES_VU)] / 255; });
+    }else{
+      const t = Date.now() / 190;                                // animation libre
+      n = .35 + Math.abs(Math.sin(t)) * .5;
+      niveauxVu(function(i){ return Math.abs(Math.sin(t + i * .45)) * .7; });
+    }
+    logo.style.setProperty('--n', n.toFixed(3));
+    rafLogo = requestAnimationFrame(boucle);
+  })();
+}
+
 function revelationVoix(){
   const etat = document.getElementById('etatEnvoi');
   SONS.erreur();
@@ -1008,7 +1051,11 @@ function revelationVoix(){
     "On avait déjà ta voix. Depuis le début. Écoute bien, c'est toi.");
 
   setTimeout(function(){
+    document.getElementById('vumetre').classList.add('actif');
     jouerChansons(function(){
+      stopLogo();
+      niveauxVu(function(){ return 0; });
+      document.getElementById('vumetre').classList.remove('actif');
       SONS.aura(); confettis(110);
       etat.innerHTML = '✅ VOIX AUTHENTIFIÉE À 67% — identité confirmée';
       document.getElementById('r9').innerHTML =
@@ -1018,7 +1065,7 @@ function revelationVoix(){
       modale("🎤 VOIX AUTHENTIFIÉE",
         ETAT.nom + ", tu viens d'enregistrer ta voix pour un site qui avait déjà deux extraits de toi en stock. " +
         "Aucun fichier n'a quitté ton téléphone. Le malaise, lui, reste entier.");
-    });
+    }, animerLogo);
   }, 1600);
 }
 
