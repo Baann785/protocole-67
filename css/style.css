@@ -358,13 +358,20 @@ body.hack #mute{
 body.hack main{padding:0;display:block;min-height:100vh}
 body.hack .ecran{max-width:none;animation:none}
 
-/* la « boîte » du dernier écran n'est plus une carte : c'est l'écran entier */
-body.hack #e14 .boite{
+/* La « boîte » n'est plus une carte : c'est l'écran entier.
+   Sélecteur volontairement générique (pas de #eXX) : le mode hack ne doit
+   dépendre d'aucun numéro d'écran, sinon une renumérotation le casse. */
+body.hack .boite{
   background:transparent;border:0;box-shadow:none;
   padding:clamp(14px,3vw,34px);min-height:100vh;
   display:flex;flex-direction:column;justify-content:center;
   max-width:1100px;margin:0 auto;
 }
+/* filet de sécurité : aucun reste de l'ancienne DA ne doit traîner */
+body.hack .etiquette,
+body.hack .titre,
+body.hack .dialogue,
+body.hack .reaction{display:none}
 
 /* ---- fenêtres d'erreur Windows XP ---- */
 .xp-err{
