@@ -1066,8 +1066,7 @@ function revelationVoix(){
         "on l'a même jamais envoyé nulle part. Par contre les archives, elles, on les avait. 😌";
       document.getElementById('b9').style.display = 'block';
       modale("🎤 VOIX AUTHENTIFIÉE",
-        ETAT.nom + ", tu viens d'enregistrer ta voix pour un site qui avait déjà deux extraits de toi en stock. " +
-        "Aucun fichier n'a quitté ton téléphone. Le malaise, lui, reste entier.");
+        "Merci pour les belles paroles. Dieu merci t'as pas continué dans la musique…");
     }, animerLogo);
   }, 1600);
 }
