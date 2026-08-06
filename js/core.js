@@ -6,7 +6,7 @@ const ETAT = {
   nom: CONFIG.prenomAffiche, ageDit: CONFIG.age, ecran: 0,
   debut: Date.now(),
   clics67: 0, rates67: 0, erreursSimon: 0, mancheSimonMax: 0, moai: 0,
-  indiceMdp: false, tiragesSlot: 0, compliments: 0,
+  indiceMdp: false, voixEnvoyee: false, compliments: 0,
   secrets: {}
 };
 

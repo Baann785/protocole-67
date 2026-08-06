@@ -153,19 +153,26 @@
   </div>
 </div>
 
-<!-- ============ 9. ÉPREUVE 6 · MACHINE À SOUS ============ -->
+<!-- ============ 9. ÉPREUVE 6 · RECONNAISSANCE VOCALE ============ -->
 <div class="ecran" id="e9">
   <div class="boite">
-    <div class="etiquette">Épreuve 6 · Jeu de hasard (truqué)</div>
-    <div class="titre">Décroche le 6-7</div>
+    <div class="etiquette">Épreuve 6 · Authentification biométrique</div>
+    <div class="titre">Enregistre ta voix</div>
     <div class="dialogue" id="d9"></div>
-    <div class="slot">
-      <div class="rouleau" id="r0">🎂</div>
-      <div class="rouleau" id="r1">🗿</div>
-      <div class="rouleau" id="r2">🦈</div>
+
+    <div class="scoreLigne">
+      <span class="t" id="etatMicro">MICRO : INACTIF</span>
+      <span class="c" id="chronoVoix">⏱ 6,7 s</span>
     </div>
+    <div class="vumetre" id="vumetre"></div>
+
+    <div class="progression" id="zoneEnvoi" style="display:none">
+      <div class="rail"><div class="fill" id="fillEnvoi"></div></div>
+      <div class="etat" id="etatEnvoi"></div>
+    </div>
+
     <div class="reaction" id="r9"></div>
-    <button class="btn" id="bSlot">TIRER LE LEVIER 🎰</button>
+    <button class="btn" id="bMicro">🎙️ AUTORISER LE MICRO</button>
     <button class="btn sec" id="b9" style="display:none">CONTINUER</button>
   </div>
 </div>
@@ -230,7 +237,7 @@
         est déclarée officiellement <b>âgée de 20 ans</b>,
         soit <b>6-7</b> selon le calendrier de l'aura.<br>
         Après avoir franchi <b>8 épreuves</b>, cliqué <b>67 fois</b> sur un bouton qui rétrécissait,
-        encaissé <b>un faux plantage</b>, <b>deux jackpots volés</b>, <b>un faux refus</b>
+        encaissé <b>un faux plantage</b>, <b>une authentification vocale</b>, <b>un faux refus</b>
         et <b>trois mensonges d'un bouton-cadeau</b> sans jeter son téléphone,
         elle est reconnue <b>Grande Détentrice du Rizz</b>,
         <b>Ambassadrice du Tasty Crousty</b> et <b>Citoyenne d'honneur du Six Seven</b>,

@@ -187,14 +187,34 @@ input[type=range]{width:100%;height:34px;accent-color:var(--magenta);cursor:poin
 .scoreLigne .t{color:var(--jaune)}
 .scoreLigne .c{color:var(--cyan)}
 
-/* ---------------- MACHINE À SOUS ---------------- */
-.slot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:420px;margin:0 auto 6px}
-.rouleau{
-  aspect-ratio:.8;background:#fffdf2;border:5px solid #000;box-shadow:inset 0 0 22px rgba(0,0,0,.3);
-  display:flex;align-items:center;justify-content:center;font-size:clamp(40px,13vw,68px);
+/* ---------------- RECONNAISSANCE VOCALE ---------------- */
+.vumetre{
+  display:flex;align-items:flex-end;gap:3px;height:clamp(90px,22vw,140px);
+  border:4px solid var(--violet);background:#0d0326;padding:8px;margin-bottom:16px;
+  transition:border-color .2s,box-shadow .2s;
 }
-.rouleau.tourne{animation:vibre .12s linear infinite}
-@keyframes vibre{50%{transform:translateY(-3px)}}
+.vumetre i{
+  flex:1;min-height:3px;height:4%;
+  background:linear-gradient(180deg,var(--magenta),var(--cyan),var(--lime));
+  transition:height .07s linear;
+}
+.vumetre.actif{border-color:var(--lime);box-shadow:0 0 30px rgba(198,255,0,.3)}
+.pastille{
+  display:inline-block;width:12px;height:12px;border-radius:50%;
+  background:#5a3a8a;margin-right:8px;vertical-align:0;
+}
+.pastille.rec{background:#ff2b6b;animation:clign .7s steps(2) infinite}
+
+.progression{margin-bottom:16px}
+.progression .rail{height:26px;border:4px solid #fff;background:#100428;overflow:hidden}
+.progression .fill{
+  height:100%;width:0;background:linear-gradient(90deg,var(--lime),var(--jaune),var(--magenta));
+  transition:width .3s;box-shadow:0 0 18px var(--jaune);
+}
+.progression .etat{
+  font-family:var(--mono);font-size:12px;color:var(--cyan);text-align:center;
+  margin-top:8px;line-height:1.5;min-height:2.4em;
+}
 
 /* ---------------- QUIZ / MEMES ---------------- */
 .qnum{font-family:var(--mono);color:var(--cyan);letter-spacing:2px;margin-bottom:8px;font-size:12px}

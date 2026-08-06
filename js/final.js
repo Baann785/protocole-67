@@ -151,7 +151,7 @@ function remplirBilan(){
     ["Erreurs de mémoire",          ETAT.erreursSimon],
     ["Moaï attrapés",               ETAT.moai + " 🗿"],
     ["Mot de passe (15 règles)",    ETAT.indiceMdp ? "avec l'indice 😔" : "toute seule 💪"],
-    ["Jackpots volés sous ses yeux", "2 💀"],
+    ["Voix envoyée à un serveur imaginaire", ETAT.voixEnvoyee ? "oui 🎤" : "esquivée 😶"],
     ["Compliments réclamés",        ETAT.compliments],
     ["Temps passé sur ce site",     "~" + min + " min"]
   ];
@@ -163,7 +163,7 @@ function remplirBilan(){
   if(ETAT.mancheSimonMax > 7)
     verdict = "Verdict : t'as débloqué le mode Nasdas. Personne débloque le mode Nasdas. On sait pas ce que t'es, mais c'est pas humain. Note finale : 6-7/10.";
   else if(ETAT.mancheSimonMax >= 7 && !ETAT.indiceMdp)
-    verdict = "Verdict : manche 5 atteinte, 15 règles de mot de passe sans aide, faux plantage encaissé et deux jackpots volés sans jeter ton téléphone. Tu es officiellement une menace. Note finale : 6-7/10.";
+    verdict = "Verdict : manche 7 atteinte, 15 règles de mot de passe sans aide, faux plantage encaissé et ta propre voix renvoyée à la figure sans jeter ton téléphone. Tu es officiellement une menace. Note finale : 6-7/10.";
   else if(ETAT.rates67 > 15)
     verdict = "Verdict : la vue laisse à désirer, mais le cœur y était, et t'as pas abandonné. Note finale : 6-7/10.";
   else
@@ -177,11 +177,11 @@ function remplirBilan(){
 document.getElementById('b13').onclick = function(){
   n67 = 0; ritOK = false; ritGele = false; tour67 = 1;
   qi = 0; essaisNom = 0;
-  manche67 = 0; essaisTaupe = 0; prolongation = false; tirage = 0; slotTourne = false;
+  manche67 = 0; essaisTaupe = 0; prolongation = false;
   mdpFini = false; mdpSurprise = false; niveauMax = 0; clicsMute = 0;
-  clearInterval(tMelange67); resetCadeau(); rangerPads(); animerBouton67();
+  clearInterval(tMelange67); resetCadeau(); rangerPads(); animerBouton67(); stopVoix();
   ETAT.clics67 = 0; ETAT.rates67 = 0; ETAT.erreursSimon = 0; ETAT.mancheSimonMax = 0; ETAT.moai = 0;
-  ETAT.indiceMdp = false; ETAT.tiragesSlot = 0; ETAT.compliments = 0;
+  ETAT.indiceMdp = false; ETAT.voixEnvoyee = false; ETAT.compliments = 0;
   ETAT.debut = Date.now();
 
   document.getElementById('compte').textContent = '0';

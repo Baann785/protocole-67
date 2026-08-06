@@ -615,10 +615,7 @@ function refuserPuisSurprise(){
   }, 6100);
 }
 
-/* Vérification FINALE, une fois la règle « swanetneo » satisfaite.
-   C'est là qu'on passe les deux enregistrements où elle chante : elle croit
-   avoir fini, elle est coincée devant le chargement, et il n'y a pas de
-   bouton pour couper. */
+/* Vérification FINALE, une fois la règle « swanetneo » satisfaite. */
 function accepterMdp(){
   mdpFini = true;
   clearTimeout(chronoIndice); clearTimeout(chronoIndice2);
@@ -632,22 +629,15 @@ function accepterMdp(){
   SONS.logo();
 
   setTimeout(function(){
-    liste.innerHTML = '<div class="regle"><span class="etat">🎤</span><span>' +
-      '<b>Authentification vocale requise.</b> Nous avons retrouvé ceci dans nos archives. ' +
-      'Merci de patienter pendant la lecture intégrale. Il n\'y a pas de bouton pour arrêter.</span></div>';
-    tape(document.getElementById('d7'), "Écoute bien. C'est toi. On avait gardé ça au chaud depuis le début.");
-
-    jouerChansons(function(){
-      SONS.aura(); confettis(110);
-      liste.innerHTML =
-        '<div class="regle ok"><span class="etat">🏆</span><span><b>Voix authentifiée. Mot de passe accepté.</b> ' +
-        'Pour de vrai. On va jamais s\'en servir, c\'était juste pour te voir souffrir.</span></div>';
-      document.getElementById('b7').style.display = 'block';
-      tape(document.getElementById('d7'),
-        "15 règles, une règle qui en annulait une autre, un faux refus, une règle rajoutée en douce " +
-        "et ta propre voix en guise de bouquet final. La plupart des gens abandonnent à la règle 7.");
-    });
-  }, 1900);
+    SONS.aura(); confettis(110);
+    liste.innerHTML =
+      '<div class="regle ok"><span class="etat">🏆</span><span><b>Mot de passe accepté.</b> ' +
+      'Pour de vrai. On va jamais s\'en servir, c\'était juste pour te voir souffrir.</span></div>';
+    document.getElementById('b7').style.display = 'block';
+    tape(document.getElementById('d7'),
+      "15 règles, une qui annulait la précédente, un faux refus et une règle rajoutée en douce. " +
+      "La plupart des gens abandonnent à la règle 7.");
+  }, 2100);
 }
 
 document.getElementById('inputMdp').addEventListener('input', majRegles);
@@ -812,93 +802,227 @@ function finTaupe(gagne){
 document.getElementById('b8').onclick = function(){ aller(9); };
 
 /* ============================================================
-   9 — ÉPREUVE 6 : MACHINE À SOUS (truquée)
-   Escalade : elle décroche le jackpot DEUX fois, et deux fois un
-   rouleau « glisse » sous ses yeux. Le vrai jackpot est au 5e tirage.
+   9 — ÉPREUVE 6 : RECONNAISSANCE VOCALE
+
+   Elle enregistre sa voix et « l'envoie » pour analyse. RIEN N'EST
+   NI STOCKÉ NI ENVOYÉ : on ouvre le micro uniquement pour animer le
+   vumètre en direct (AnalyserNode), le flux est coupé dès la fin, et
+   il n'y a aucun appel réseau dans ce fichier. Si elle refuse le micro
+   — ou si le navigateur n'est pas en HTTPS — on bascule sur un vumètre
+   simulé et l'épreuve se déroule exactement pareil.
+
+   La chute : « correspondance trouvée dans nos archives » → on lui
+   ressort ses deux enregistrements.
    ============================================================ */
-const SYMBOLES = ['6️⃣','7️⃣','🗿','🦈','🎂','💀','🍝','🥖','🥪','📸','🔥'];
-/* Le hasard n'a rien à faire ici : tous les tirages sont écrits d'avance. */
-const TIRAGES = [
-  {r:['6️⃣','7️⃣','💀'], m:"6… 7… 💀. À UN symbole près. C'est fait exprès, évidemment. Retire."},
-  {r:['6️⃣','🥖','7️⃣'], m:"6, une baguette, 7. Dans le désordre. La machine se moque de toi. Retire encore."},
-  {r:['6️⃣','7️⃣','🎂'], m:"🎉 6-7-🎂 — JACKPOT !!! C'est bon, t'as gagné, l'épreuve est termi—",
-   glisse:2, apres:"…<b>ah.</b> Le rouleau de droite a glissé. 💀 Il était sur le gâteau. On l'a tous vu. La machine dit non."},
-  {r:['6️⃣','7️⃣','🎂'], m:"🎉 ENCORE 6-7-🎂 ! Cette fois c'est bon, personne peut nous l'enlever—",
-   glisse:0, apres:"…<b>PAS ENCORE.</b> 😤 Cette fois c'est celui de GAUCHE. 💀 La machine est de mauvaise foi et l'assume."},
-  {r:['6️⃣','7️⃣','🎂'], m:"🎉 6-7-🎂 — JACKPOT. Pour de vrai. Aucun rouleau n'a bougé. Gain : zéro euro et beaucoup d'aura."}
-];
-let tirage = 0, slotTourne = false;
+const BARRES_VU = 28, DUREE_ENREG = 6700;
+let fluxMicro = null, analyseur = null, rafVoix = null, tVoix = null,
+    microSimule = false, voixEnCours = false;
+
 ECRANS[9] = function(){
   tape(document.getElementById('d9'),
-    "Jeu de hasard officiel. Objectif : aligner 6-7. Le hasard est truqué en ta faveur, mais alors vraiment pas tout de suite.");
-  tirage = 0;
-  document.getElementById('b9').style.display = 'none';
-  document.getElementById('bSlot').style.display = 'block';
-  document.getElementById('bSlot').textContent = 'TIRER LE LEVIER 🎰';
-  document.getElementById('bSlot').disabled = false;
-  document.getElementById('r9').textContent = '';
-};
-document.getElementById('bSlot').onclick = function(){
-  if(slotTourne) return;
-  slotTourne = true;
-  this.disabled = true;
-  document.getElementById('r9').textContent = '';
-  SONS.skibidi();
+    "Authentification biométrique. On a besoin d'un échantillon de ta voix. " +
+    "C'est parfaitement inutile, mais c'est obligatoire.");
 
-  const cible = TIRAGES[Math.min(tirage, TIRAGES.length - 1)];
-  const rouleaux = [document.getElementById('r0'), document.getElementById('r1'), document.getElementById('r2')];
-  const boucles = [];
-
-  rouleaux.forEach(function(el, i){
-    el.classList.add('tourne');
-    boucles[i] = setInterval(function(){ el.textContent = pioche(SYMBOLES); }, 75);
-    setTimeout(function(){
-      clearInterval(boucles[i]);
-      el.classList.remove('tourne');
-      el.textContent = cible.r[i];
-      SONS.pop();
-      if(i === 2) finSlot(cible);
-    }, 900 + i * 650);
-  });
-};
-function finSlot(cible){
-  document.getElementById('r9').innerHTML = cible.m;
-  tirage++; ETAT.tiragesSlot = tirage;
-
-  if(cible.glisse != null){
-    // un rouleau glisse sous ses yeux, une seconde après l'annonce du jackpot
-    SONS.fanfare();
-    setTimeout(function(){
-      document.getElementById('r' + cible.glisse).textContent = '💀';
-      SONS.vineBoom();
-      document.body.classList.remove('secousse'); void document.body.offsetWidth;
-      document.body.classList.add('secousse');
-      document.getElementById('r9').innerHTML = cible.apres + " Retire.";
-      slotTourne = false;
-      document.getElementById('bSlot').disabled = false;
-      document.getElementById('bSlot').textContent = tirage >= 4
-        ? 'RETIRER (dernière fois, je te jure) 🎰'
-        : 'RETIRER (et cette fois pour de vrai) 🎰';
-    }, 1500);
-    return;
+  const vu = document.getElementById('vumetre');
+  if(!vu.children.length){
+    for(let i = 0; i < BARRES_VU; i++) vu.appendChild(document.createElement('i'));
   }
+  resetVoix();
+};
 
-  slotTourne = false;
-  document.getElementById('bSlot').disabled = false;
+function resetVoix(){
+  stopVoix();
+  microSimule = false; voixEnCours = false;
+  const b = document.getElementById('bMicro');
+  b.style.display = 'block';
+  b.disabled = false;
+  b.dataset.etape = 'micro';
+  b.textContent = '🎙️ AUTORISER LE MICRO';
+  document.getElementById('etatMicro').innerHTML = '<span class="pastille"></span>MICRO : INACTIF';
+  document.getElementById('chronoVoix').textContent = '⏱ 6,7 s';
+  document.getElementById('vumetre').classList.remove('actif');
+  document.getElementById('zoneEnvoi').style.display = 'none';
+  document.getElementById('fillEnvoi').style.width = '0%';
+  document.getElementById('etatEnvoi').textContent = '';
+  document.getElementById('r9').textContent = '';
+  document.getElementById('b9').style.display = 'none';
+  niveauxVu(function(){ return 0; });
+}
 
-  if(tirage >= TIRAGES.length){
-    document.getElementById('bSlot').style.display = 'none';
-    document.getElementById('b9').style.display = 'block';
-    SONS.airhorn(); confettis(120);
-    modale("🎰 JACKPOT 6-7",
-      ETAT.nom + ", tu viens de gagner à une machine à sous qui t'a volé DEUX jackpots sous les yeux. " +
-      "Nasdas aurait déjà tout distribué. Toi t'as gagné zéro euro. Profite.");
-  }else{
-    document.getElementById('bSlot').textContent = 'RETIRER LE LEVIER 🎰';
-    SONS.bruh();
+/* coupe le micro et toutes les animations — appelé aussi par la relance */
+function stopVoix(){
+  cancelAnimationFrame(rafVoix); rafVoix = null;
+  clearInterval(tVoix); tVoix = null;
+  if(fluxMicro){
+    fluxMicro.getTracks().forEach(function(t){ t.stop(); });   // la LED du micro s'éteint ici
+    fluxMicro = null;
+  }
+  analyseur = null;
+}
+
+/* applique une hauteur (0 → 1) à chaque barre du vumètre */
+function niveauxVu(valeurPour){
+  const barres = document.getElementById('vumetre').children;
+  for(let i = 0; i < barres.length; i++){
+    barres[i].style.height = Math.max(3, Math.min(100, valeurPour(i) * 100)) + '%';
   }
 }
-document.getElementById('b9').onclick = function(){ aller(10); };
+
+document.getElementById('bMicro').onclick = function(){
+  if(this.dataset.etape === 'enregistrer') demarrerEnregistrement();
+  else demanderMicro();
+};
+
+function demanderMicro(){
+  const b = document.getElementById('bMicro');
+  b.disabled = true;
+  document.getElementById('etatMicro').innerHTML = '<span class="pastille"></span>MICRO : DEMANDE EN COURS…';
+  SONS.bip();
+
+  const md = navigator.mediaDevices;
+  if(!md || !md.getUserMedia){ microIndispo("Ton navigateur veut pas ouvrir le micro."); return; }
+
+  md.getUserMedia({audio: true}).then(function(flux){
+    fluxMicro = flux;
+    const a = audio();
+    analyseur = a.createAnalyser();
+    analyseur.fftSize = 128;
+    a.createMediaStreamSource(flux).connect(analyseur);   // jamais relié aux enceintes : pas de larsen
+    pretAEnregistrer("Micro autorisé. Tu vas le regretter.");
+  }).catch(function(){
+    microIndispo("Micro refusé. Tu te méfies. T'as bien raison, mais ça change rien.");
+  });
+}
+
+function microIndispo(raison){
+  microSimule = true;
+  SONS.bruh();
+  pretAEnregistrer(raison + " On va faire semblant, le résultat sera exactement le même.");
+}
+
+function pretAEnregistrer(msg){
+  const b = document.getElementById('bMicro');
+  b.disabled = false;
+  b.dataset.etape = 'enregistrer';
+  b.textContent = '🔴 DÉMARRER L\'ENREGISTREMENT';
+  document.getElementById('etatMicro').innerHTML =
+    '<span class="pastille"></span>MICRO : ' + (microSimule ? 'SIMULÉ' : 'PRÊT');
+  tape(document.getElementById('d9'), msg + " Tu auras 6,7 secondes. Dis n'importe quoi. Chante, même.");
+}
+
+function demarrerEnregistrement(){
+  voixEnCours = true;
+  const b = document.getElementById('bMicro');
+  b.style.display = 'none';
+  document.getElementById('vumetre').classList.add('actif');
+  document.getElementById('etatMicro').innerHTML =
+    '<span class="pastille rec"></span>ENREGISTREMENT EN COURS';
+  SONS.pop();
+
+  const debut = Date.now();
+  const donnees = analyseur ? new Uint8Array(analyseur.frequencyBinCount) : null;
+
+  // vumètre : vraies fréquences du micro, ou simulation crédible si refusé
+  (function boucle(){
+    if(!voixEnCours) return;
+    if(analyseur){
+      analyseur.getByteFrequencyData(donnees);
+      niveauxVu(function(i){
+        return donnees[Math.floor(i * donnees.length / BARRES_VU)] / 255;
+      });
+    }else{
+      const t = Date.now() / 130;
+      niveauxVu(function(i){
+        return Math.abs(Math.sin(t + i * .5)) * (.25 + Math.random() * .6);
+      });
+    }
+    rafVoix = requestAnimationFrame(boucle);
+  })();
+
+  const phrases = [
+    "Parle. N'importe quoi. On analyse rien de toute façon.",
+    "Plus fort. Le micro te capte mal. (mensonge)",
+    "Continue, c'est bientôt fini.",
+    "Là tu chantes ? Ok. On garde ça.",
+    "Encore deux secondes. Tiens bon."
+  ];
+  let ip = 0;
+  tVoix = setInterval(function(){
+    const reste = Math.max(0, DUREE_ENREG - (Date.now() - debut));
+    document.getElementById('chronoVoix').textContent =
+      '⏱ ' + (reste / 1000).toFixed(1).replace('.', ',') + ' s';
+    if(reste > 0 && Math.random() < .06 && ip < phrases.length){
+      document.getElementById('r9').textContent = phrases[ip++];
+    }
+    if(reste <= 0) finEnregistrement();
+  }, 100);
+}
+
+function finEnregistrement(){
+  voixEnCours = false;
+  ETAT.voixEnvoyee = true;
+  stopVoix();
+  niveauxVu(function(){ return 0; });
+  document.getElementById('vumetre').classList.remove('actif');
+  document.getElementById('etatMicro').innerHTML = '<span class="pastille"></span>MICRO : COUPÉ';
+  document.getElementById('chronoVoix').textContent = '⏱ 0,0 s';
+  document.getElementById('r9').textContent = '';
+  SONS.logo();
+  envoyerVoix();
+}
+
+/* Le faux envoi. Aucune requête réseau : c'est une barre qui monte,
+   et qui bloque à 67% parce qu'évidemment. */
+function envoyerVoix(){
+  const zone = document.getElementById('zoneEnvoi'),
+        fill = document.getElementById('fillEnvoi'),
+        etat = document.getElementById('etatEnvoi');
+  zone.style.display = 'block';
+
+  const etapes = [
+    [12,  "Compression de l'échantillon…"],
+    [31,  "Chiffrement (on fait semblant)…"],
+    [58,  "Envoi au serveur d'analyse vocale…"],
+    [67,  "Analyse en cours… 67%"],
+    [67,  "Toujours 67%. Évidemment."],
+    [67,  "…"],
+    [94,  "Comparaison avec la base nationale des voix…"],
+    [100, "⚠️ CORRESPONDANCE TROUVÉE DANS NOS ARCHIVES"]
+  ];
+  let i = 0;
+  (function suite(){
+    if(i >= etapes.length){ revelationVoix(); return; }
+    const e = etapes[i++];
+    fill.style.width = e[0] + '%';
+    etat.textContent = e[1];
+    SONS.bip();
+    setTimeout(suite, i === 5 || i === 6 ? 1300 : 750);
+  })();
+}
+
+function revelationVoix(){
+  const etat = document.getElementById('etatEnvoi');
+  SONS.erreur();
+  etat.innerHTML = '🎤 Deux enregistrements archivés à ton nom. Lecture intégrale obligatoire.';
+  tape(document.getElementById('d9'),
+    "On avait déjà ta voix. Depuis le début. Écoute bien, c'est toi.");
+
+  setTimeout(function(){
+    jouerChansons(function(){
+      SONS.aura(); confettis(110);
+      etat.innerHTML = '✅ VOIX AUTHENTIFIÉE À 67% — identité confirmée';
+      document.getElementById('r9').innerHTML =
+        "Ton échantillon a été comparé, analysé, puis <b>supprimé</b> — on l'a jamais gardé, " +
+        "on l'a même jamais envoyé nulle part. Par contre les archives, elles, on les avait. 😌";
+      document.getElementById('b9').style.display = 'block';
+      modale("🎤 VOIX AUTHENTIFIÉE",
+        ETAT.nom + ", tu viens d'enregistrer ta voix pour un site qui avait déjà deux extraits de toi en stock. " +
+        "Aucun fichier n'a quitté ton téléphone. Le malaise, lui, reste entier.");
+    });
+  }, 1600);
+}
+
+document.getElementById('b9').onclick = function(){ stopVoix(); aller(10); };
 
 /* ============================================================
    10 — ÉPREUVE 7 : QUIZ SUR ELLE-MÊME
