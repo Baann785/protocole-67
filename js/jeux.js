@@ -18,7 +18,7 @@
    le bouton ne bouge plus et le compte s'arrête bien à 67.
    ============================================================ */
 let n67 = 0, ritOK = false, ritGele = false, tour67 = 1;
-ECRANS[4] = function(){
+ECRANS[5] = function(){
   tape(document.getElementById('d4'),
     "Première épreuve. Appuie 67 fois sur le bouton. Pourquoi ? Aucune raison. C'est ça la beauté du truc.");
 };
@@ -151,7 +151,7 @@ document.getElementById('bouton67').onclick = function(){
       "par la Banque Centrale Européenne.");
   }
 };
-document.getElementById('b4').onclick = function(){ aller(5); };
+document.getElementById('b4').onclick = function(){ aller(6); };
 
 /* ============================================================
    5 — ÉPREUVE 2 : TROUVE LE 67
@@ -166,7 +166,7 @@ const MANCHES_67 = [
   {n:1,  leurres:['68'], cadeau:true}
 ];
 let manche67 = 0, tMelange67 = null;
-ECRANS[5] = function(){
+ECRANS[6] = function(){
   tape(document.getElementById('d5'),
     "Test optique obligatoire. 3 manches. Trouve le 67. Si tu cliques à côté, on le saura, et on le notera.");
   manche67 = 0; ETAT.rates67 = 0;
@@ -277,7 +277,7 @@ function reussiteGrille(g){
     construireGrille();
   }
 }
-document.getElementById('b5').onclick = function(){ clearInterval(tMelange67); aller(6); };
+document.getElementById('b5').onclick = function(){ clearInterval(tMelange67); aller(7); };
 
 /* ============================================================
    6 — ÉPREUVE 3 : SIMON 6-7
@@ -302,7 +302,7 @@ const MANCHES_SIMON = [
 const DERNIERE_SIMON = 7;   // au-delà, c'est la manche secrète
 let seqSimon = [], posSimon = 0, mancheSimon = 0, simonVerrou = true;
 
-ECRANS[6] = function(){
+ECRANS[7] = function(){
   tape(document.getElementById('d6'),
     "Test de mémoire. Je joue une séquence, tu la répètes. 7 manches, et ça accélère à chaque fois. Ça va bien se passer. (non)");
   seqSimon = []; posSimon = 0; mancheSimon = 0; ETAT.erreursSimon = 0; simonVerrou = true;
@@ -458,7 +458,7 @@ Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
     }
   };
 });
-document.getElementById('b6').onclick = function(){ aller(7); };
+document.getElementById('b6').onclick = function(){ aller(8); };
 
 /* ============================================================
    7 — ÉPREUVE 4 : MOT DE PASSE IMPOSSIBLE
@@ -512,7 +512,7 @@ function solutionMdp(){
   return base + suffixe + "67";
 }
 
-ECRANS[7] = function(){
+ECRANS[4] = function(){
   tape(document.getElementById('d7'),
     "Sécurité renforcée. Crée un mot de passe. Les règles arrivent au fur et à mesure. Non, on peut pas te les donner toutes d'un coup.");
   mdpFini = false; mdpSurprise = false; niveauMax = 0;
@@ -657,7 +657,7 @@ document.getElementById('bIndice').onclick = function(){
   tape(document.getElementById('d7'), "Pff. Tiens : « " + sol + " ». Aucune fierté. Mais bon, c'est ton anniversaire.");
   majRegles();
 };
-document.getElementById('b7').onclick = function(){ aller(8); };
+document.getElementById('b7').onclick = function(){ aller(5); };
 
 /* ============================================================
    8 — ÉPREUVE 5 : ATTRAPE LES MOAÏ
@@ -1082,7 +1082,7 @@ const QUIZ = [
    r:["Regarder mon tel pendant 6-7 heures","Dire « je me lève dans 5 min » (mensonge)","Ma routine skincare en 47 étapes","Rien, je dors encore, laissez-moi"],
    f:["Comme 97% de la population. Banal. -3 points.","Menteuse professionnelle. Confirmé.","Personne te croit mais on valide.","Réponse la plus honnête du site."]},
   {q:"Ton emoji signature, sois honnête :",
-   r:["💀 (utilisé 800 fois par jour)","😭 pour absolument tout","🗿 quand j'ai rien à dire","🤡 que j'envoie aux gens en retard"],
+   r:["💀 (utilisé 800 fois par jour)","😭 pour absolument tout","🐵 quand j'ai rien à dire","🤡 que j'envoie aux gens en retard"],
    f:["Diagnostic : brainrot avancé.","Tu pleures pour un chat sur TikTok. On sait.","Le choix des vrais. +67 aura.","Agressive. On aime."]},
   {q:"Tu mets combien de temps à répondre à un message ?",
    r:["6-7 minutes","6-7 heures","6-7 jours ouvrés","J'ai lu, j'ai ri, j'ai jamais répondu"],
@@ -1148,6 +1148,8 @@ function poserQuestion(){
 function calculerScoreQuiz(){
   document.getElementById('quizJeu').style.display = 'none';
   document.getElementById('quizFin').style.display = 'block';
+  // le bouton reste caché tant que l'analyse n'est pas allée à son terme
+  document.getElementById('b10').style.display = 'none';
   const d = document.getElementById('d10');
   const etapes = [
     "Calcul du score en cours…",
@@ -1162,7 +1164,8 @@ function calculerScoreQuiz(){
     if(i >= etapes.length){
       SONS.fanfare(); confettis(120);
       tape(d, "Score final : 67%. Peu importe tes réponses, c'était 67% depuis le début. " +
-              "Tu te connais à 67%. Les 33% restants, on les garde pour nous.");
+              "Tu te connais à 67%. Les 33% restants, on les garde pour nous.",
+        function(){ document.getElementById('b10').style.display = 'block'; });
       return;
     }
     tape(d, etapes[i++], function(){ setTimeout(suite, 700); });
@@ -1171,10 +1174,15 @@ function calculerScoreQuiz(){
 document.getElementById('b10').onclick = function(){ aller(11); };
 
 /* ============================================================
-   11 — ÉPREUVE 8 : CADEAU FUYANT
-   Escalade : il annonce trois fois qu'il abandonne. Il ment trois fois.
+   11 — ÉPREUVE 7 : CADEAU FUYANT
+
+   Escalade : 12 esquives au lieu de 7, le bouton rétrécit et accélère
+   à chaque fois, des faux cadeaux viennent brouiller la piste à
+   mi-parcours — et à la fin il ment encore trois fois.
    ============================================================ */
-let esquives = 0, mensonges = 0;
+const ESQUIVES_MAX = 12, LEURRE_DES = 5;
+let esquives = 0, mensonges = 0, leurres = [];
+
 const MENSONGES = [
   {txt:"🎁 VAS-Y CLIQUE (j'ai perdu)", fond:'#c6ff00', couleur:'#000',
    apres:"Ah non pardon. Réflexe. <b>Là c'est vraiment bon</b>, je te jure sur l'aura."},
@@ -1183,44 +1191,104 @@ const MENSONGES = [
   {txt:"🎁 SUR LA TÊTE DU CROUSTY. CLIQUE.", fond:'#00f0ff', couleur:'#000',
    apres:"Bon. Là j'ai plus d'excuse. 😐 Vas-y."}
 ];
+
 ECRANS[11] = function(){
   tape(document.getElementById('d11'),
     "Dernière épreuve. Ton cadeau est dans ce bouton. Clique dessus. C'est tout. Facile.");
 };
+
 (function(){
   const zone = document.getElementById('zoneCadeau'), btn = document.getElementById('cadeau');
   const phrases = [
-    "Ah. Raté.","Encore raté. T'es proche pourtant.","Non.","Sérieusement ?",
-    "T'as vraiment 20 ans ?","Bon. Encore 2 essais et je te laisse.",
-    "Ok. J'en peux plus. Je bouge plus. Promis. Clique."
+    "Ah. Raté.",
+    "Encore raté. T'es proche pourtant.",
+    "Non.",
+    "Sérieusement ?",
+    "T'as vraiment 20 ans ?",
+    "⚠️ Bon. J'appelle des renforts.",
+    "Lequel est le vrai ? Aucune idée. Bonne chance.",
+    "Il rétrécit aussi, tu remarques ?",
+    "Tu t'acharnes. C'est presque touchant.",
+    "6-7 tentatives. On approche.",
+    "Encore deux. Je le sens mal pour toi.",
+    "Ok. J'en peux plus. Je bouge plus. Promis."
   ];
-  function deplacer(){
-    const z = zone.getBoundingClientRect(), b = btn.getBoundingClientRect();
-    const maxX = Math.max(0, z.width - b.width), maxY = Math.max(0, z.height - b.height);
-    btn.style.left = (Math.random() * maxX + b.width / 2) + 'px';
-    btn.style.top  = (Math.random() * maxY + b.height / 2) + 'px';
+
+  /* place un élément au hasard dans la zone, en le gardant entièrement dedans */
+  function placer(el){
+    const z = zone.getBoundingClientRect(), b = el.getBoundingClientRect();
+    const maxX = Math.max(0, z.width  - b.width);
+    const maxY = Math.max(0, z.height - b.height);
+    el.style.left = (Math.random() * maxX + b.width  / 2) + 'px';
+    el.style.top  = (Math.random() * maxY + b.height / 2) + 'px';
   }
+
+  /* il maigrit et devient de plus en plus vif au fil des esquives */
+  function retrecir(){
+    const p = Math.min(1, esquives / ESQUIVES_MAX);
+    btn.style.fontSize = 'clamp(10px,' + (3.2 - p * 1.5) + 'vw,' + (20 - p * 9) + 'px)';
+    btn.style.padding  = (17 - p * 9) + 'px ' + (24 - p * 13) + 'px';
+    btn.style.transitionDuration = (0.17 - p * 0.12) + 's';
+  }
+
+  /* les faux cadeaux : ils fuient aussi, et ils sont vides */
+  function semerLeurres(){
+    if(leurres.length) return;
+    for(let i = 0; i < 3; i++){
+      const l = document.createElement('button');
+      l.className = 'leurre';
+      l.textContent = '🎁 CLIQUE ICI';
+      zone.appendChild(l);
+      placer(l);
+      l.addEventListener('mouseenter', function(){ placer(l); SONS.bip(); });
+      l.addEventListener('click', function(e){
+        e.stopPropagation();
+        SONS.erreur();
+        l.textContent = '💨 VIDE';
+        l.classList.add('creve');
+        document.getElementById('d11').textContent = pioche([
+          "Celui-là était vide. Évidemment.",
+          "Faux cadeau. Il y en a trois. Amuse-toi bien.",
+          "Non. Cherche encore."
+        ]);
+        setTimeout(function(){ l.classList.remove('creve'); l.textContent = '🎁 CLIQUE ICI'; placer(l); }, 900);
+      });
+      leurres.push(l);
+    }
+  }
+
   function fuir(){
-    if(esquives >= 7) return;
-    deplacer();
+    if(esquives >= ESQUIVES_MAX) return;
+    placer(btn);
     document.getElementById('d11').textContent = phrases[Math.min(esquives, phrases.length - 1)];
     SONS.bruh();
     esquives++;
-    if(esquives >= 7) appliquerMensonge(0);
+    retrecir();
+    if(esquives === LEURRE_DES) semerLeurres();
+    if(esquives >= ESQUIVES_MAX) appliquerMensonge(0);
   }
+
   function appliquerMensonge(i){
+    // il redevient gros et lisible : elle a le droit d'y croire
+    btn.style.fontSize = ''; btn.style.padding = ''; btn.style.transitionDuration = '';
     btn.style.background = MENSONGES[i].fond;
     btn.style.color = MENSONGES[i].couleur;
     btn.textContent = MENSONGES[i].txt;
+    leurres.forEach(function(l){ l.remove(); });
+    leurres = [];
   }
+
   btn.addEventListener('mouseenter', fuir);
-  btn.addEventListener('touchstart', function(e){ if(esquives < 7){ e.preventDefault(); fuir(); } }, {passive:false});
+  btn.addEventListener('touchstart', function(e){
+    if(esquives < ESQUIVES_MAX){ e.preventDefault(); fuir(); }
+  }, {passive:false});
+
   btn.addEventListener('click', function(){
-    if(esquives < 7){ fuir(); return; }
+    if(esquives < ESQUIVES_MAX){ fuir(); return; }
 
     // il a promis de plus bouger. il ment trois fois de suite.
     if(mensonges < MENSONGES.length - 1){
-      deplacer();
+      placer(btn);
       SONS.vineBoom();
       document.getElementById('d11').innerHTML = MENSONGES[mensonges].apres;
       mensonges++;
@@ -1228,7 +1296,6 @@ ECRANS[11] = function(){
       return;
     }
     if(mensonges === MENSONGES.length - 1){
-      // le tout dernier : il avoue, et il ne bouge vraiment plus
       mensonges++;
       SONS.erreur();
       document.getElementById('d11').innerHTML = MENSONGES[MENSONGES.length - 1].apres;
@@ -1242,17 +1309,18 @@ ECRANS[11] = function(){
     document.getElementById('b11').style.display = 'block';
     document.getElementById('d11').textContent = "Cadeau récupéré. Contenu du cadeau : ce site. Voilà. C'est le cadeau. Désolé.";
     modale("🎁 CADEAU DÉBLOQUÉ",
-      "Bravo, t'as vaincu un bouton qui t'a menti trois fois. Ton cadeau officiel c'est ce site : " +
-      "coût 0€, temps de fabrication 6-7 heures, valeur sentimentale illimitée. (Le vrai cadeau arrive en vrai, panique pas.)");
+      "12 esquives, 3 faux cadeaux et 3 mensonges. T'as vaincu un bouton malhonnête. " +
+      "Ton cadeau officiel c'est ce site : coût 0€, temps de fabrication 6-7 heures, " +
+      "valeur sentimentale illimitée. (Le vrai cadeau arrive en vrai, panique pas.)");
   });
 })();
-
-/* Le tout dernier bouton « normal » du site. C'est lui qui déraille
-   et fait basculer dans la scène finale (voir js/intrusion.js). */
-document.getElementById('b11').onclick = function(){ armerBoutonFin(this); };
 
 /* réinitialise l'esquive du cadeau — appelé par la relance dans final.js */
 function resetCadeau(){
   esquives = 0;
   mensonges = 0;
+  leurres.forEach(function(l){ l.remove(); });
+  leurres = [];
+  const b = document.getElementById('cadeau');
+  b.style.fontSize = ''; b.style.padding = ''; b.style.transitionDuration = '';
 }

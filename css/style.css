@@ -279,6 +279,16 @@ input[type=range]{width:100%;height:34px;accent-color:var(--magenta);cursor:poin
 /* ---------------- CADEAU FUYANT ---------------- */
 #zoneCadeau{position:relative;height:min(46vh,320px);border:4px solid var(--magenta);overflow:hidden;
   background:repeating-linear-gradient(-45deg,#12042c,#12042c 18px,#1b0740 18px,#1b0740 36px)}
+/* les faux cadeaux de la dernière épreuve : même allure, mais vides */
+.leurre{
+  position:absolute;transform:translate(-50%,-50%);
+  font-family:var(--impact);text-transform:uppercase;font-size:clamp(13px,3.2vw,20px);
+  letter-spacing:1px;padding:17px 24px;background:var(--jaune);color:#000;
+  border:4px solid #000;box-shadow:6px 6px 0 var(--magenta);cursor:pointer;white-space:nowrap;
+  transition:left .17s cubic-bezier(.3,1.7,.5,1),top .17s cubic-bezier(.3,1.7,.5,1);
+}
+.leurre.creve{background:#5c1030;color:#ffc9d9;box-shadow:6px 6px 0 #ff2b6b}
+
 #cadeau{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   font-family:var(--impact);text-transform:uppercase;font-size:clamp(13px,3.2vw,20px);letter-spacing:1px;
   padding:17px 24px;background:var(--jaune);color:#000;border:4px solid #000;box-shadow:6px 6px 0 var(--magenta);

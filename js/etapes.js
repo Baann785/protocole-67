@@ -14,7 +14,7 @@ ECRANS[0] = function(){
     "Synchronisation avec les serveurs de Nasdas… aucune liasse reçue.",
     "Ce site est réservé à UNE seule personne.",
     "Si c'est pas toi : ferme l'onglet. Si c'est toi : t'es très mal barrée.",
-    "8 épreuves. On va te mentir 6-7 fois. C'est le concept, faut pas le prendre mal."
+    "7 épreuves. On va te mentir 6-7 fois. C'est le concept, faut pas le prendre mal."
   ];
   let i = 0;
   (function suite(){
@@ -120,9 +120,14 @@ ECRANS[3] = function(){
   tape(document.getElementById('d3'), "Bouge le curseur jusqu'à ton âge réel. On vérifiera. On vérifie tout ici.");
 };
 const slider = document.getElementById('ageSlider'), ageAff = document.getElementById('ageAff');
+/* Un glissé émet des dizaines d'évènements par seconde. Émettre un son à
+   chacun saturait le moteur audio et rendait le curseur poussif : on limite
+   à un bip toutes les 90 ms. */
+let dernierBipAge = 0;
 slider.addEventListener('input', function(){
   ageAff.textContent = slider.value;
-  SONS.bip();
+  const t = Date.now();
+  if(t - dernierBipAge > 90){ dernierBipAge = t; SONS.bip(); }
   const p = document.getElementById('p3'), v = +slider.value;
   if(v <= 6) p.textContent = "→ Bébé détecté. Repose ce téléphone.";
   else if(v === 7) p.textContent = "→ 7. Presque. Il manque un 6 devant.";

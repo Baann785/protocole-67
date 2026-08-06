@@ -19,12 +19,12 @@
 
   const ECRANS_NOMS = [
     'Boot', 'Prénom', 'Captcha', 'Âge',
-    'É1 · Rituel 67', 'É2 · Trouve 67', 'É3 · Simon', 'É4 · Mot de passe',
-    'É5 · Crousty', 'É6 · Voix', 'É7 · Quiz', 'É8 · Cadeau',
+    'Mot de passe', 'É1 · Rituel 67', 'É2 · Trouve 67', 'É3 · Simon',
+    'É4 · Crousty', 'É5 · Voix', 'É6 · Quiz', 'É7 · Cadeau',
     '💀 INTRUSION', '🎂 ÉPILOGUE'
   ];
   // bouton « continuer » de chaque écran, pour pouvoir le forcer
-  const CONTINUER = {4:'b4', 5:'b5', 6:'b6', 7:'b7', 8:'b8', 9:'b9', 10:'b10', 11:'b11', 13:'b13'};
+  const CONTINUER = {4:'b7', 5:'b4', 6:'b5', 7:'b6', 8:'b8', 9:'b9', 10:'b10', 11:'b11', 13:'b13'};
 
   /* ---------------- styles ---------------- */
   const css = document.createElement('style');
@@ -108,7 +108,7 @@
   }
 
   function remplirMdp(){
-    if(ETAT.ecran !== 7 || typeof solutionMdp !== 'function') return;
+    if(ETAT.ecran !== 4 || typeof solutionMdp !== 'function') return;
     const inp = document.getElementById('inputMdp');
     inp.value = solutionMdp();
     inp.dispatchEvent(new Event('input'));   // déclenche la validation des règles
