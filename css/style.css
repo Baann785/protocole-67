@@ -513,6 +513,71 @@ body.hack #e14 .boite{
   50%{transform:translate(5px,-3px) skewX(4deg)}75%{transform:translate(-2px,-1px)}
 }
 
+/* ============================================================
+   ÉPILOGUE — troisième et dernière direction artistique.
+
+   Après le néon (le parcours) puis le terminal froid (l'intrusion),
+   on termine sur quelque chose de calme et chaud : noir profond, halo
+   doré, typographie sobre. C'est le seul écran du site où on ne
+   cherche pas à la faire rire.
+   ============================================================ */
+body.epilogue{background:#080604;color:#f3e7d3}
+body.epilogue::before{display:none}
+body.epilogue::after{display:none}
+body.epilogue #hud{display:none}
+body.epilogue #mute{
+  background:transparent;color:rgba(243,231,211,.5);
+  border-color:rgba(243,231,211,.25);box-shadow:none;font-size:11px;padding:6px 9px;
+}
+body.epilogue main{padding:56px 16px}
+body.epilogue .ecran{max-width:760px}
+body.epilogue .boite{
+  background:transparent;border:0;box-shadow:none;padding:clamp(18px,4vw,40px);
+  position:relative;text-align:center;
+}
+body.epilogue .halo{
+  position:fixed;top:-20%;left:50%;transform:translateX(-50%);
+  width:min(900px,140vw);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle,rgba(255,190,90,.16),rgba(255,140,60,.05) 45%,transparent 68%);
+  animation:respire 7s ease-in-out infinite;
+}
+@keyframes respire{50%{transform:translateX(-50%) scale(1.09);opacity:.75}}
+
+.titre-epi{
+  font-family:'Georgia','Times New Roman',serif;font-weight:normal;
+  font-size:clamp(21px,4.6vw,34px);letter-spacing:5px;text-transform:uppercase;
+  color:rgba(243,231,211,.62);margin-bottom:6px;
+}
+.nom-epi{
+  font-family:'Brush Script MT','Segoe Script',cursive;
+  font-size:clamp(52px,15vw,110px);line-height:1.05;margin-bottom:30px;
+  color:#ffd89b;text-shadow:0 0 40px rgba(255,190,90,.45);
+}
+body.epilogue #msgFinal{
+  font-family:'Georgia','Times New Roman',serif;
+  font-size:clamp(15px,2.6vw,20px);line-height:2;color:#e8dcc8;
+  text-align:left;max-width:620px;margin:0 auto;
+}
+body.epilogue #msgFinal b{color:#ffd89b;font-weight:normal}
+body.epilogue .btn{
+  background:transparent;color:#ffd89b;border:1px solid rgba(255,216,155,.45);
+  box-shadow:none;font-family:'Georgia',serif;font-size:14px;letter-spacing:3px;
+  text-transform:uppercase;padding:14px 22px;width:auto;margin:0 auto;
+}
+body.epilogue .btn:hover{background:rgba(255,216,155,.1);transform:none;box-shadow:none}
+body.epilogue .btn:active{transform:translateY(2px);box-shadow:none}
+body.epilogue .petit{color:rgba(243,231,211,.35);text-align:center}
+body.epilogue .bilan{border-color:rgba(255,216,155,.25);background:rgba(255,216,155,.03);text-align:left}
+body.epilogue .bilan h4{background:rgba(255,216,155,.14);color:#ffd89b;font-family:'Georgia',serif;letter-spacing:3px}
+body.epilogue .bilan .l{border-bottom-color:rgba(255,216,155,.12)}
+body.epilogue .bilan .l span:last-child{color:#ffd89b;font-family:'Georgia',serif}
+body.epilogue .bilan .verdict{background:rgba(255,216,155,.05);color:#e8dcc8;font-family:'Georgia',serif}
+body.epilogue .secrets{border-color:rgba(255,216,155,.25);text-align:left}
+body.epilogue .secrets h4{color:#ffd89b;font-family:'Georgia',serif;letter-spacing:3px}
+body.epilogue .secrets .s{border-bottom-color:rgba(255,216,155,.1)}
+body.epilogue .secrets .s.trouve{color:#ffd89b}
+body.epilogue .secrets .s.cache{color:rgba(243,231,211,.35)}
+
 /* ---------------- POPUPS ---------------- */
 .popup{
   position:fixed;z-index:700;width:min(310px,86vw);background:#c0c0c0;color:#000;

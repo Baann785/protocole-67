@@ -32,14 +32,22 @@ const CONFIG = {
   debug: false,
 
   // Le vrai message de fin — le seul moment sincère du site.
-  // <b>…</b> met en jaune, <br><br> sépare les paragraphes (ils apparaissent un par un).
+  // Il s'affiche APRÈS la vidéo, sur la page épilogue, avec la musique en fond.
+  // <b>…</b> met en valeur, <br><br> sépare les paragraphes (ils apparaissent un par un).
   messageFinal:
-    "Ok, on arrête deux secondes le délire.<br><br>" +
-    "T'as fait <b>8 épreuves</b> et cliqué <b>67 fois</b> sur un bouton pour rien. " +
-    "Franchement, respect. Peu de gens seraient allés au bout. Toi si. C'est exactement pour ça qu'on t'aime bien.<br><br>" +
-    "T'as <b>20 ans</b> aujourd'hui. C'est un âge stylé, profites-en à fond : " +
-    "fais des trucs débiles, ris trop fort, dis oui à des plans pourris. " +
-    "Le reste on s'en occupe.<br><br>" +
-    "<b>Joyeux anniversaire 🎂❤️</b><br><br>" +
-    "<span style='font-size:.78em;opacity:.65'>(voilà, moment mignon terminé, tu peux retourner cliquer sur 6-7)</span>"
+    "Voilà. C'est fini. On peut arrêter de te mentir deux minutes.<br><br>" +
+    "T'as encaissé <b>8 épreuves</b>, un compteur qui t'a fait tout recommencer, " +
+    "15 règles de mot de passe, ta propre voix balancée à la figure et un site qui a fait " +
+    "semblant de planter. T'es allée au bout de tout ça sans rien lâcher. " +
+    "C'était un peu le but, en fait.<br><br>" +
+    "<b>Joyeux anniversaire.</b> 🎂<br><br>" +
+    "Et merci. Sincèrement. Merci pour la personne que t'es <b>tous les jours</b> — " +
+    "pas juste aujourd'hui parce que c'est ton anniversaire. " +
+    "Pour ta façon de rendre les trucs banals moins banals, de rire trop fort au mauvais moment, " +
+    "et d'être là sans qu'on ait besoin de demander.<br><br>" +
+    "<b>On t'aime tous.</b> Vraiment tous.<br><br>" +
+    "Et encore plus <b>Ludo</b> et <b>Baann_</b>, tes super potes, " +
+    "qui sont — c'est prouvé scientifiquement dans ce site — <b>les meilleurs</b>. 🫡<br><br>" +
+    "<span style='font-size:.8em;opacity:.7'>Passe une journée à la hauteur de ce que tu vaux. " +
+    "C'est-à-dire beaucoup.<br>6-7. 🗿</span>"
 };

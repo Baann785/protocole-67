@@ -58,7 +58,7 @@ document.getElementById('modale').onclick = function(e){ if(e.target === this) t
    ECRANS[n] est rempli par etapes.js, jeux.js et final.js.
    PCT est volontairement bloqué à 67% sur les trois derniers écrans. */
 const ECRANS = {};
-const PCT = [0, 5, 9, 14, 21, 28, 36, 44, 52, 60, 67, 67, 67, 100, 67];
+const PCT = [0, 5, 9, 14, 21, 28, 36, 44, 52, 60, 67, 67, 67, 67, 100];
 
 function aller(n){
   const cur = document.querySelector('.ecran.actif');

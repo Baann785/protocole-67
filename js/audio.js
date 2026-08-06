@@ -159,10 +159,41 @@ function jouerChansons(fin, surPiste){
   suivante();
 }
 
+/* ------------------------------------------------------------
+   MUSIQUE DE L'ÉPILOGUE
+   En fond, en boucle, à 20% du volume : elle doit se sentir, pas
+   couvrir le texte. Montée en douceur sur 4 secondes.
+   ------------------------------------------------------------ */
+const VOLUME_MUSIQUE = 0.20;
+let musiqueFinale = null;
+
+function lancerMusiqueFinale(){
+  if(musiqueFinale) return;                     // déjà lancée
+  musiqueFinale = new Audio('audio/musique-finale.mp3');
+  musiqueFinale.loop = true;
+  musiqueFinale.volume = 0;
+  musiqueFinale.play().then(function(){
+    // fondu d'entrée : 0 → 20% en 4 s
+    const pas = VOLUME_MUSIQUE / 40;
+    const t = setInterval(function(){
+      if(!musiqueFinale){ clearInterval(t); return; }
+      musiqueFinale.volume = Math.min(VOLUME_MUSIQUE, musiqueFinale.volume + pas);
+      if(musiqueFinale.volume >= VOLUME_MUSIQUE) clearInterval(t);
+    }, 100);
+  }).catch(function(){ musiqueFinale = null; });  // lecture refusée : tant pis, pas de blocage
+}
+
+function couperMusiqueFinale(){
+  if(!musiqueFinale) return;
+  musiqueFinale.pause();
+  musiqueFinale = null;
+}
+
 document.getElementById('mute').onclick = function(){
   sonActif = !sonActif;
   this.textContent = sonActif ? '🔊 SON' : '🔇 SON';
   this.style.color = this.style.borderColor = sonActif ? '#c6ff00' : '#ff2bd6';
+  if(musiqueFinale) musiqueFinale.volume = sonActif ? VOLUME_MUSIQUE : 0;
   clicsMute++;
   if(clicsMute === 7) secret('board');   // easter egg : 7 clics sur le bouton son
 };

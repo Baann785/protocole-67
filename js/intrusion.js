@@ -56,12 +56,12 @@ function infosMachine(){
 /* ============================================================
    1 — LE BOUTON QUI DÉRAILLE
    ============================================================ */
-function armerBoutonFin(){
-  const b = document.getElementById('bFin');
-  b.style.display = 'block';
+/* `b` = le bouton qui va dérailler. C'est le dernier bouton normal du site
+   (celui des compliments) : elle croit juste passer à la suite. */
+function armerBoutonFin(b){
+  if(!b) return;
   b.disabled = false;
   b.classList.remove('glitche');
-  b.textContent = 'TERMINER LE PROTOCOLE';
 
   // à partir d'ici, plus une seule popup du parcours : on nettoie et on coupe
   popupsBloquees = true;
@@ -75,19 +75,18 @@ function armerBoutonFin(){
     tempeteErreurs();
   }
 
-  // il commence à trembler tout seul au bout de 2 s
-  const tGlitch = setTimeout(function(){
-    b.classList.add('glitche');
-    SONS.erreur();
-    const mots = ['TERMINER LE PROTOCOLE','TERMIN3R L3 PR0T0C0L3','T3RM1N4R... ERR','▓▒░ ERREUR ░▒▓','6-7-6-7-6-7'];
-    let i = 0;
-    const tMots = setInterval(function(){
-      b.textContent = mots[++i % mots.length];
-      if(i > 12){ clearInterval(tMots); partir(); }
-    }, 260);
-  }, 2000);
+  // il se met à trembler immédiatement, puis lâche tout seul
+  const origine = b.textContent;
+  b.classList.add('glitche');
+  SONS.erreur();
+  const mots = [origine, 'CH4RG3M3NT...', 'ERR: 0x6-7', '▓▒░ ERREUR ░▒▓', '6-7-6-7-6-7', '█████████'];
+  let i = 0;
+  const tMots = setInterval(function(){
+    b.textContent = mots[++i % mots.length];
+    if(i > 11){ clearInterval(tMots); partir(); }
+  }, 250);
 
-  b.onclick = function(){ clearTimeout(tGlitch); partir(); };
+  b.onclick = function(){ clearInterval(tMots); partir(); };
 }
 
 /* ============================================================
@@ -162,7 +161,7 @@ function glitchEcran(){
     document.body.classList.remove('secousse');
     document.getElementById('noir').classList.add('on');
     document.body.classList.add('hack');          // ← l'ancienne DA cesse d'exister
-    aller(14);
+    aller(13);
 
     // noir complet : 2,5 s de silence total
     setTimeout(function(){
@@ -176,7 +175,7 @@ function glitchEcran(){
    4 — LE TERMINAL
    ============================================================ */
 let intrusionLancee = false;
-ECRANS[14] = function(){ /* le contenu est piloté par la séquence ci-dessous */ };
+ECRANS[13] = function(){ /* le contenu est piloté par la séquence ci-dessous */ };
 
 /* Le terminal doit TOUJOURS suivre la dernière ligne tout seul : elle ne doit
    jamais avoir à toucher la souris pour voir ce qui s'écrit. On colle le
@@ -397,7 +396,6 @@ function afficherVideo(){
   // le terminal se replie pour laisser toute la place à la vidéo
   document.getElementById('term').classList.add('reduit');
   bloc.style.display = 'block';
-  document.getElementById('zoneRelance').style.display = 'none';
   brancherLecteur();
   setTimeout(function(){ bloc.scrollIntoView({behavior:'smooth', block:'center'}); }, 150);
 }
@@ -444,14 +442,18 @@ function brancherLecteur(){
 
   v.onended = function(){
     sonActif = true;
-    confettis(120);
-    SONS.fanfare();
     ligne('ok', '');
-    ligne('gros', '🎂 JOYEUX ANNIVERSAIRE ' + norm(ETAT.nom).toUpperCase() + ' 🎂');
+    ligne('gros', '>>> TRANSMISSION TERMINÉE <<<');
     ligne('dim', 'root@6-7:~# _');
-    const z = document.getElementById('zoneRelance');
-    z.style.display = 'block';
-    setTimeout(function(){ z.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 200);
+    // fondu au noir, puis la vraie fin (js/final.js)
+    setTimeout(function(){
+      document.getElementById('noir').classList.add('on');
+      setTimeout(function(){
+        document.body.classList.remove('hack');
+        document.getElementById('noir').classList.remove('on');
+        aller(14);
+      }, 1800);
+    }, 1400);
   };
 
   majVolume();
@@ -464,6 +466,8 @@ function brancherLecteur(){
 function resetIntrusion(){
   intrusionLancee = false;
   sonActif = true;
+  couperMusiqueFinale();
+  document.body.classList.remove('epilogue');
   popupsBloquees = false;                 // le parcours normal retrouve ses popups
   document.getElementById('term').classList.remove('reduit');
   document.body.classList.remove('hack');
@@ -471,7 +475,6 @@ function resetIntrusion(){
   document.getElementById('glitch').classList.remove('on');
   document.getElementById('term').innerHTML = '';
   document.getElementById('blocVideo').style.display = 'none';
-  document.getElementById('zoneRelance').style.display = 'none';
   document.getElementById('videoCadre').classList.remove('lance');
   document.querySelectorAll('.xp-err').forEach(function(e){ e.remove(); });
   const v = document.getElementById('videoFinale');

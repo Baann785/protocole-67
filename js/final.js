@@ -94,12 +94,13 @@ document.getElementById('bCompli').onclick = function(){
     b.textContent = "C'EST BON J'EN AI ASSEZ";
   }
 };
-document.getElementById('b12').onclick = function(){ aller(13); };
+/* Le tout dernier bouton « normal » du site. C'est lui qui déraille. */
+document.getElementById('b12').onclick = function(){ armerBoutonFin(this); };
 
 /* ============================================================
-   13 — PAGE FINALE
-   Tout arrive dans l'ordre : message → certificat → bilan → secrets,
-   et le bouton "relancer" seulement à la toute fin.
+   14 — ÉPILOGUE
+   La vraie fin, après l'intrusion et la vidéo. Musique douce en fond,
+   message sincère, puis le récapitulatif et le bouton pour relancer.
    ============================================================ */
 function reveler(id, delai){
   setTimeout(function(){
@@ -109,30 +110,28 @@ function reveler(id, delai){
   }, delai);
 }
 
-ECRANS[13] = function(){
-  document.getElementById('titreFinal').textContent = "Bon. " + ETAT.nom + ".";
+ECRANS[14] = function(){
+  document.body.classList.add('epilogue');
+  document.getElementById('nomEpi').textContent = ETAT.nom;
+  lancerMusiqueFinale();
   const msg = document.getElementById('msgFinal');
   msg.innerHTML = '';
-  ['certif','bilan','blocSecrets','zoneFin'].forEach(function(id){
+  ['certif','bilan','blocSecrets','zoneRelance'].forEach(function(id){
     document.getElementById(id).style.display = 'none';
   });
-  SONS.violon();
 
   const morceaux = CONFIG.messageFinal.split('<br><br>');
   let i = 0;
   (function suite(){
     if(i >= morceaux.length){
       document.getElementById('certifNom').textContent = ETAT.nom;
-      reveler('certif', 400);
-      SONS.fanfare(); confettis(120);
+      reveler('certif', 1400);
+      confettis(90);
       remplirBilan();
-      reveler('bilan', 2200);
+      reveler('bilan', 3400);
       remplirSecrets();
-      reveler('blocSecrets', 4000);
-      setTimeout(function(){ SONS.airhorn(); confettis(110); }, 4200);
-      // le dernier bouton du site… qui ne va pas bien se passer (js/intrusion.js)
-      reveler('zoneFin', 5600);
-      setTimeout(armerBoutonFin, 5700);
+      reveler('blocSecrets', 5200);
+      reveler('zoneRelance', 6800);
       return;
     }
     const p = document.createElement('p');
@@ -140,7 +139,7 @@ ECRANS[13] = function(){
     p.innerHTML = morceaux[i++];
     msg.appendChild(p);
     requestAnimationFrame(function(){ p.style.opacity = 1; });
-    setTimeout(suite, 1700);
+    setTimeout(suite, 2300);
   })();
 };
 
