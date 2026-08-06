@@ -46,9 +46,13 @@ function toast(txt){
 }
 
 /* ---------------- MODALE ---------------- */
-function modale(titre, texte){
+/* `image` est facultative : chemin d'une photo affichée au-dessus du texte */
+function modale(titre, texte, image){
   document.getElementById('modTitre').textContent = titre;
   document.getElementById('modTxt').textContent = texte;
+  const img = document.getElementById('modImg');
+  if(image){ img.src = image; img.style.display = 'block'; }
+  else { img.style.display = 'none'; img.removeAttribute('src'); }
   document.getElementById('modale').classList.add('on');
 }
 document.getElementById('modFermer').onclick = function(){ document.getElementById('modale').classList.remove('on'); };

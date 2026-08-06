@@ -694,6 +694,11 @@ body.epilogue .petit{color:rgba(243,231,211,.35);text-align:center}
 #modale h3{font-family:var(--impact);font-size:clamp(24px,6vw,44px);color:var(--jaune);
   text-transform:uppercase;margin-bottom:14px;line-height:1}
 #modale p{font-family:var(--comic);font-size:clamp(14px,3.4vw,19px);line-height:1.65;margin-bottom:20px}
+#modImg{
+  display:block;width:min(280px,62%);aspect-ratio:1;object-fit:cover;
+  margin:0 auto 18px;border:5px solid var(--jaune);border-radius:50%;
+  box-shadow:0 0 40px rgba(255,230,0,.45);
+}
 
 /* Le décalage en pourcentage ne suffit pas à le sortir de l'écran quand il est
    vide (sa hauteur est alors minuscule) : il en restait un bout visible en haut.

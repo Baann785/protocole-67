@@ -145,10 +145,10 @@ document.getElementById('bouton67').onclick = function(){
     setTimeout(function(){ document.body.classList.remove('aura-max'); }, 3500);
     document.getElementById('b4').style.display = 'block';
     this.textContent = '✅';
-    modale("ÉPREUVE 1 VALIDÉE 🗿",
-      ETAT.clics67 + " clics au total, un bouton qui traversait l'écran et un compteur qui a sauté le 67 " +
-      "pour te faire tout refaire. " + ETAT.nom + ", ton niveau d'aura vient d'être réévalué à la hausse " +
-      "par la Banque Centrale Européenne.");
+    modale("🐶 BON TOUTOU",
+      "T'as appuyé sur le bouton comme je te l'ai demandé. " + ETAT.clics67 + " fois. " +
+      "Sans poser une seule question. Voilà ta récompense : une caresse sur la tête.",
+      "photos/bontoutou.jpg");
   }
 };
 document.getElementById('b4').onclick = function(){ aller(6); };
@@ -1307,13 +1307,20 @@ ECRANS[11] = function(){
 
     SONS.fanfare(); confettis(110);
     document.getElementById('b11').style.display = 'block';
-    document.getElementById('d11').textContent = "Cadeau récupéré. Contenu du cadeau : ce site. Voilà. C'est le cadeau. Désolé.";
-    modale("🎁 CADEAU DÉBLOQUÉ",
-      "12 esquives, 3 faux cadeaux et 3 mensonges. T'as vaincu un bouton malhonnête. " +
-      "Ton cadeau officiel c'est ce site : coût 0€, temps de fabrication 6-7 heures, " +
-      "valeur sentimentale illimitée. (Le vrai cadeau arrive en vrai, panique pas.)");
+    document.getElementById('d11').innerHTML =
+      "Bouton vaincu ! Alors… le cadeau n'est pas dedans. 😈<br>" +
+      "Il est sur <b>la prochaine épreuve</b>. Juste après. Promis.";
+    modale("🎁 PRESQUE 😈",
+      "12 esquives, 3 faux cadeaux et 3 mensonges — et le bouton était vide. " +
+      "Ton cadeau n'est pas ici : il est sur la PROCHAINE épreuve. " +
+      "Clique sur CONTINUER, il t'attend juste derrière. Qu'est-ce qui pourrait mal se passer.");
   });
 })();
+
+/* Le tout dernier bouton « normal » du site. Elle croit aller chercher son
+   cadeau sur l'épreuve suivante — c'est lui qui déclenche l'effondrement
+   (voir js/intrusion.js). */
+document.getElementById('b11').onclick = function(){ armerBoutonFin(this); };
 
 /* réinitialise l'esquive du cadeau — appelé par la relance dans final.js */
 function resetCadeau(){
