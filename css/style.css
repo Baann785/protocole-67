@@ -474,6 +474,21 @@ body.hack .reaction{display:none}
   100%{transform:scale(1);               filter:brightness(1)}
 }
 
+/* En plein écran, le boîtier devient l'élément racine : sans ces règles il
+   garde sa largeur de 1040px collée en haut à gauche sur fond noir. */
+.bloc-video .boitier:fullscreen,
+.bloc-video .boitier:-webkit-full-screen{
+  width:100vw;max-width:none;max-height:none;height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  background:#000;border:0;box-shadow:none;animation:none;overflow:hidden;
+}
+.bloc-video .boitier:fullscreen .cadre,
+.bloc-video .boitier:-webkit-full-screen .cadre{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.bloc-video .boitier:fullscreen video,
+.bloc-video .boitier:-webkit-full-screen video{max-height:100%;width:auto;max-width:100%}
+.bloc-video .boitier:fullscreen .pied,
+.bloc-video .boitier:-webkit-full-screen .pied{display:none}
+
 .bloc-video .tete{
   background:#00ff41;color:#000;font-family:var(--mono);font-weight:bold;
   padding:7px 11px;font-size:clamp(10px,2.2vw,13px);letter-spacing:1px;

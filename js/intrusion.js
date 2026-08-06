@@ -496,10 +496,24 @@ function brancherLecteur(){
   /* ---- plein écran ---- */
   plein.onclick = function(){
     const b = document.getElementById('boitierVideo');
-    if(document.fullscreenElement) document.exitFullscreen();
-    else if(b.requestFullscreen) b.requestFullscreen();
-    else if(v.webkitEnterFullscreen) v.webkitEnterFullscreen();   // iPhone
+    const dedans = document.fullscreenElement || document.webkitFullscreenElement;
+    if(dedans){
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    }else if(b.requestFullscreen){
+      b.requestFullscreen().catch(function(){ if(v.webkitEnterFullscreen) v.webkitEnterFullscreen(); });
+    }else if(b.webkitRequestFullscreen){
+      b.webkitRequestFullscreen();
+    }else if(v.webkitEnterFullscreen){
+      v.webkitEnterFullscreen();          // iPhone : seule la vidéo peut passer en plein écran
+    }
   };
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
+    document.addEventListener(ev, function(){
+      const dedans = document.fullscreenElement || document.webkitFullscreenElement;
+      plein.textContent = dedans ? '⛶' : '⛶';
+      plein.title = dedans ? 'Quitter le plein écran' : 'Plein écran';
+    });
+  });
 
   v.onplay  = function(){ play.textContent = '⏸'; };
   v.onpause = function(){ play.textContent = '▶'; };
