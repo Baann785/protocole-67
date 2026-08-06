@@ -699,6 +699,12 @@ body.epilogue .petit{color:rgba(243,231,211,.35);text-align:center}
   margin:0 auto 18px;border:5px solid var(--jaune);border-radius:50%;
   box-shadow:0 0 40px rgba(255,230,0,.45);
 }
+/* pixel art : image entière, bords nets, pas de recadrage rond */
+#modImg.pixel{
+  object-fit:contain;border-radius:10px;background:#0a0018;
+  image-rendering:pixelated;image-rendering:crisp-edges;
+  width:min(240px,54%);
+}
 
 /* Le décalage en pourcentage ne suffit pas à le sortir de l'écran quand il est
    vide (sa hauteur est alors minuscule) : il en restait un bout visible en haut.

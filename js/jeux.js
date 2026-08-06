@@ -245,10 +245,13 @@ function reussiteGrille(g){
 
   if(manche67 >= MANCHES_67.length){
     document.getElementById('r5').innerHTML =
-      "✅ 5 manches sur 3. Vision validée. Petit détail : il y avait un deuxième 67 dans la manche 4 et tu l'as pas vu. Mais on valide.";
+      "✅ <b>5 manches sur 3. Épreuve réussie.</b> Vision validée, rétines intactes.";
     document.getElementById('b5').style.display = 'block';
     g.innerHTML = '';
     SONS.fanfare(); confettis(100);
+    modale("👁️ ÉPREUVE 2 VALIDÉE",
+      "J'ai hésité à mettre des perspectives 3D mais t'aurais pas vu la différence de toute façon…",
+      "photos/200w.gif", "pixel");
     return;
   }
   const suiv = MANCHES_67[manche67];
