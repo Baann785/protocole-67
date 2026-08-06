@@ -1,0 +1,67 @@
+# ============================================================
+#  Déploiement GitHub Pages via Actions
+#
+#  Remplace le pipeline historique « Deploy from a branch », qui
+#  expirait au bout de 10 min sur ce dépôt à cause des 53 Mo de
+#  médias (vidéo, musique, images).
+#
+#  ⚠️ Pour que ce fichier serve à quelque chose, il faut que
+#     Settings → Pages → Source soit réglé sur « GitHub Actions ».
+#     L'étape configure-pages tente de le faire toute seule.
+# ============================================================
+name: Déploiement du site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # permet de relancer à la main depuis l'onglet Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# On NE veut PAS que deux déploiements se marchent dessus : un push
+# pendant un déploiement en cours attend son tour au lieu de l'annuler.
+# C'est l'annulation en plein vol qui avait laissé l'environnement bloqué.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deployer:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v5
+
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true    # bascule la source sur « GitHub Actions » si besoin
+
+      - name: Préparer le site
+        # On n'envoie QUE ce qui est servi au navigateur. Sans ça, l'artefact
+        # embarquerait aussi .git (qui contient une deuxième copie de la vidéo),
+        # soit près du double de poids pour rien.
+        run: |
+          mkdir -p _site
+          cp -r index.html css js audio video photos .nojekyll _site/
+          echo "--- contenu envoyé ---"
+          du -sh _site
+          du -sh _site/*
+
+      - name: Téléverser l'artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publier
+        id: deploiement
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000    # 30 min au lieu de 10 : large marge pour les 47 Mo de vidéo
