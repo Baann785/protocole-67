@@ -64,4 +64,10 @@ jobs:
         id: deploiement
         uses: actions/deploy-pages@v4
         with:
-          timeout: 1800000    # 30 min au lieu de 10 : large marge pour les 47 Mo de vidéo
+          # 600000 ms (10 min) est le MAXIMUM autorisé par l'action : toute
+          # valeur supérieure est ignorée et ramenée à ce plafond.
+          # Avec ~53 Mo d'artefact on est pile à la limite : le run peut être
+          # marqué en échec alors que GitHub termine la publication juste après.
+          # Le vrai levier n'est pas ce réglage, c'est le poids des médias.
+          timeout: 600000
+          error_count: 15
