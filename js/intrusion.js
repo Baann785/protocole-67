@@ -392,49 +392,120 @@ function demarrerTerminal(){
    ============================================================ */
 function afficherVideo(){
   SONS.logo();
-  const bloc = document.getElementById('blocVideo');
-  // le terminal se replie pour laisser toute la place à la vidéo
+  // le terminal se replie derrière ; le lecteur s'ouvre au centre de l'écran
   document.getElementById('term').classList.add('reduit');
-  bloc.style.display = 'block';
+  document.getElementById('blocVideo').classList.add('on');
   brancherLecteur();
-  setTimeout(function(){ bloc.scrollIntoView({behavior:'smooth', block:'center'}); }, 150);
 }
 
 function brancherLecteur(){
-  const v     = document.getElementById('videoFinale'),
-        cadre = document.getElementById('videoCadre'),
-        play  = document.getElementById('videoPlay'),
-        mute  = document.getElementById('videoMute'),
-        vol   = document.getElementById('videoVolume'),
-        pct   = document.getElementById('videoVolPct'),
-        tps   = document.getElementById('videoTemps');
+  const v      = document.getElementById('videoFinale'),
+        cadre  = document.getElementById('videoCadre'),
+        voile  = document.getElementById('videoVoile'),
+        vTxt   = document.getElementById('videoVoileTxt'),
+        charge = document.getElementById('chargeFlux'),
+        barre  = document.getElementById('chargeFluxBarre'),
+        play   = document.getElementById('videoPlay'),
+        piste  = document.getElementById('videoPiste'),
+        joue   = document.getElementById('videoJoue'),
+        tete   = document.getElementById('videoCurseur'),
+        plein  = document.getElementById('videoPlein'),
+        mute   = document.getElementById('videoMute'),
+        vol    = document.getElementById('videoVolume'),
+        pct    = document.getElementById('videoVolPct'),
+        tps    = document.getElementById('videoTemps');
 
-  function mmss(s){
-    if(!isFinite(s)) return '0:00';
-    const m = Math.floor(s / 60), r = Math.floor(s % 60);
+  let demarree = false, glisse = false;
+
+  function mmss(x){
+    if(!isFinite(x) || x < 0) return '0:00';
+    const m = Math.floor(x / 60), r = Math.floor(x % 60);
     return m + ':' + (r < 10 ? '0' : '') + r;
   }
-  function majTemps(){ tps.textContent = mmss(v.currentTime) + ' / ' + mmss(v.duration); }
+  function majTemps(){
+    tps.textContent = mmss(v.currentTime) + ' / ' + mmss(v.duration);
+    const p = v.duration ? (v.currentTime / v.duration) : 0;
+    joue.style.width = (p * 100) + '%';
+    tete.style.left  = (p * 100) + '%';
+  }
   function majVolume(){
     const p = v.muted ? 0 : Math.round(v.volume * 100);
     pct.textContent = p + '%';
     vol.value = p;
     mute.textContent = p === 0 ? '🔇' : (p < 50 ? '🔉' : '🔊');
   }
-  function bascule(){ if(v.paused) v.play(); else v.pause(); }
 
+  /* ---- petite animation d'ouverture du flux avant le lancement ---- */
+  function ouvrirLeFlux(){
+    if(demarree) return;
+    demarree = true;
+    voile.classList.add('chargement');
+    vTxt.textContent = 'OUVERTURE DU FLUX…';
+    SONS.bip();
+
+    const DUREE = 1300, debut = Date.now();
+    const t = setInterval(function(){
+      const p = Math.min(1, (Date.now() - debut) / DUREE);
+      barre.style.width = (p * 100) + '%';
+      if(p > .33 && p < .36) vTxt.textContent = 'DÉCOMPRESSION…';
+      if(p > .66 && p < .69) vTxt.textContent = 'SYNCHRONISATION…';
+      if(p % .2 < .04) SONS.bip();
+      if(p >= 1){
+        clearInterval(t);
+        vTxt.textContent = 'LECTURE';
+        SONS.logo();
+        setTimeout(function(){
+          voile.classList.add('parti');
+          sonActif = false;                 // plus aucun bip du site par-dessus la vidéo
+          v.play().catch(function(){
+            // lecture refusée : on redonne la main plutôt que de rester bloqué
+            voile.classList.remove('parti', 'chargement');
+            vTxt.textContent = 'CLIQUE POUR LIRE';
+            demarree = false;
+            sonActif = true;
+          });
+        }, 400);
+      }
+    }, 40);
+  }
+
+  function bascule(){
+    if(!demarree){ ouvrirLeFlux(); return; }
+    if(v.paused) v.play(); else v.pause();
+  }
   cadre.onclick = bascule;
   play.onclick  = bascule;
 
-  v.onplay = function(){
-    play.textContent = '⏸';
-    cadre.classList.add('lance');
-    v.controls = true;            // on rend les commandes natives une fois lancée
-    sonActif = false;             // plus aucun bip du site par-dessus la vidéo
+  /* ---- piste : elle choisit le moment, au clic comme au glissé ---- */
+  function viser(e){
+    if(!v.duration) return;
+    const r = piste.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    v.currentTime = p * v.duration;
+    majTemps();
+  }
+  piste.addEventListener('pointerdown', function(e){
+    glisse = true;
+    piste.setPointerCapture(e.pointerId);
+    viser(e);
+  });
+  piste.addEventListener('pointermove', function(e){ if(glisse) viser(e); });
+  piste.addEventListener('pointerup',     function(){ glisse = false; });
+  piste.addEventListener('pointercancel', function(){ glisse = false; });
+
+  /* ---- plein écran ---- */
+  plein.onclick = function(){
+    const b = document.getElementById('boitierVideo');
+    if(document.fullscreenElement) document.exitFullscreen();
+    else if(b.requestFullscreen) b.requestFullscreen();
+    else if(v.webkitEnterFullscreen) v.webkitEnterFullscreen();   // iPhone
   };
+
+  v.onplay  = function(){ play.textContent = '⏸'; };
   v.onpause = function(){ play.textContent = '▶'; };
   v.ontimeupdate = majTemps;
   v.onloadedmetadata = majTemps;
+  v.ondurationchange = majTemps;
   v.onvolumechange = majVolume;
 
   mute.onclick = function(){ v.muted = !v.muted; majVolume(); };
@@ -445,15 +516,15 @@ function brancherLecteur(){
     ligne('ok', '');
     ligne('gros', '>>> TRANSMISSION TERMINÉE <<<');
     ligne('dim', 'root@6-7:~# _');
-    // fondu au noir, puis la vraie fin (js/final.js)
     setTimeout(function(){
+      document.getElementById('blocVideo').classList.remove('on');
       document.getElementById('noir').classList.add('on');
       setTimeout(function(){
         document.body.classList.remove('hack');
         document.getElementById('noir').classList.remove('on');
         aller(14);
       }, 1800);
-    }, 1400);
+    }, 1200);
   };
 
   majVolume();
@@ -474,9 +545,12 @@ function resetIntrusion(){
   document.getElementById('noir').classList.remove('on');
   document.getElementById('glitch').classList.remove('on');
   document.getElementById('term').innerHTML = '';
-  document.getElementById('blocVideo').style.display = 'none';
-  document.getElementById('videoCadre').classList.remove('lance');
+  document.getElementById('blocVideo').classList.remove('on');
   document.querySelectorAll('.xp-err').forEach(function(e){ e.remove(); });
   const v = document.getElementById('videoFinale');
-  v.pause(); v.currentTime = 0; v.controls = false;
+  v.pause(); v.currentTime = 0;
+  const voile = document.getElementById('videoVoile');
+  voile.classList.remove('parti', 'chargement');
+  document.getElementById('videoVoileTxt').textContent = 'CLIQUE POUR LIRE';
+  document.getElementById('chargeFluxBarre').style.width = '0%';
 }

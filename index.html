@@ -236,33 +236,44 @@
   <div class="boite">
     <div class="term" id="term"></div>
 
-    <div class="bloc-video" id="blocVideo" style="display:none">
-      <div class="tete">
-        <span>📼 FICHIER DÉCHIFFRÉ</span>
-        <span id="videoNom">YassSixSeven.mp4</span>
-      </div>
-      <!-- pas d'attribut `poster` et preload="none" : aucune image de la vidéo
-           n'est chargée ni affichée avant qu'elle clique. Zéro spoiler. -->
-      <div class="cadre" id="videoCadre">
-        <video id="videoFinale" playsinline preload="none">
-          <source src="video/yass-six-seven.mp4" type="video/mp4">
-          Ton navigateur n'arrive pas à lire cette vidéo.
-        </video>
-        <div class="voile" id="videoVoile">
-          <div class="fleche">▶</div>
-          <div class="txt">CLIQUE POUR LIRE</div>
+    <!-- Le lecteur s'affiche en surimpression, centré à l'écran, avec une
+         apparition façon vieille télé cathodique qui s'allume. -->
+    <div class="bloc-video" id="blocVideo">
+      <div class="boitier" id="boitierVideo">
+        <div class="tete">
+          <span>📼 FICHIER DÉCHIFFRÉ</span>
+          <span id="videoNom">YassSixSeven.mp4</span>
         </div>
+
+        <!-- aucun `poster` : rien de la vidéo n'est visible avant qu'elle clique -->
+        <div class="cadre" id="videoCadre">
+          <video id="videoFinale" playsinline preload="metadata">
+            <source src="video/yass-six-seven.mp4" type="video/mp4">
+            Ton navigateur n'arrive pas à lire cette vidéo.
+          </video>
+          <div class="voile" id="videoVoile">
+            <div class="fleche">▶</div>
+            <div class="txt" id="videoVoileTxt">CLIQUE POUR LIRE</div>
+            <div class="charge-flux" id="chargeFlux"><i id="chargeFluxBarre"></i></div>
+          </div>
+        </div>
+
+        <div class="commandes">
+          <button id="videoPlay" title="Lecture / pause">▶</button>
+          <div class="piste" id="videoPiste" title="Choisis le moment">
+            <div class="joue" id="videoJoue"></div>
+            <div class="curseur-piste" id="videoCurseur"></div>
+          </div>
+          <span class="tps" id="videoTemps">0:00 / 0:00</span>
+          <span class="vol">
+            <button id="videoMute" title="Couper le son">🔊</button>
+            <input type="range" id="videoVolume" min="0" max="100" value="100" title="Volume">
+            <span class="pct" id="videoVolPct">100%</span>
+          </span>
+          <button id="videoPlein" title="Plein écran">⛶</button>
+        </div>
+        <div class="pied">Tu peux mettre en pause, revenir en arrière, avancer, régler le son. Personne te presse.</div>
       </div>
-      <div class="commandes">
-        <button id="videoPlay" title="Lecture / pause">▶</button>
-        <span class="tps" id="videoTemps">0:00 / 0:00</span>
-        <span class="vol">
-          <button id="videoMute" title="Couper le son">🔊</button>
-          <input type="range" id="videoVolume" min="0" max="100" value="100" title="Volume">
-          <span class="pct" id="videoVolPct">100%</span>
-        </span>
-      </div>
-      <div class="pied">Lecture · pause · volume · plein écran — tu contrôles tout, personne te presse.</div>
     </div>
   </div>
 </div>
