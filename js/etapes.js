@@ -19,7 +19,7 @@ ECRANS[0] = function(){
   let i = 0;
   (function suite(){
     if(i >= lignes.length){ b.style.display = 'block'; return; }
-    tape(d, lignes[i++], function(){ setTimeout(suite, 850); });
+    tape(d, lignes[i++], function(){ setTimeout(suite, 1900); });   // le temps de lire tranquillement
   })();
 };
 document.getElementById('b0').onclick = function(){

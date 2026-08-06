@@ -530,15 +530,24 @@ function brancherLecteur(){
     ligne('ok', '');
     ligne('gros', '>>> TRANSMISSION TERMINÉE <<<');
     ligne('dim', 'root@6-7:~# _');
+
+    // le tube s'éteint : l'image se rétracte en un trait, puis en un point rémanent
     setTimeout(function(){
-      document.getElementById('blocVideo').classList.remove('on');
-      document.getElementById('noir').classList.add('on');
+      document.getElementById('boitierVideo').classList.add('eteint');
+      document.getElementById('remanence').classList.add('on');
+      SONS.vineBoom();
+      bruit(.5, .12, 5000);
+
       setTimeout(function(){
-        document.body.classList.remove('hack');
-        document.getElementById('noir').classList.remove('on');
-        aller(14);
-      }, 1800);
-    }, 1200);
+        document.getElementById('blocVideo').classList.remove('on');
+        document.getElementById('noir').classList.add('on');
+        setTimeout(function(){
+          document.body.classList.remove('hack');
+          document.getElementById('noir').classList.remove('on');
+          aller(14);
+        }, 1600);
+      }, 1200);
+    }, 1400);
   };
 
   majVolume();
@@ -563,6 +572,8 @@ function resetIntrusion(){
   document.querySelectorAll('.xp-err').forEach(function(e){ e.remove(); });
   const v = document.getElementById('videoFinale');
   v.pause(); v.currentTime = 0;
+  document.getElementById('boitierVideo').classList.remove('eteint');
+  document.getElementById('remanence').classList.remove('on');
   const voile = document.getElementById('videoVoile');
   voile.classList.remove('parti', 'chargement');
   document.getElementById('videoVoileTxt').textContent = 'CLIQUE POUR LIRE';
