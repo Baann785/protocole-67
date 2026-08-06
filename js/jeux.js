@@ -376,11 +376,17 @@ function lancerManche(n){
   document.getElementById('infoSimon').textContent = cfg.titre + ' — ' + cfg.longueur + ' SIGNAUX';
   jouerSequence();
 }
-function finirSimon(html){
+/* `sansRecompense` sert au seul cas où une fenêtre plus flatteuse est déjà
+   prévue (la manche 8 secrète) : on ne veut pas en empiler deux. */
+function finirSimon(html, sansRecompense){
   simonVerrou = true;
   rangerPads();
   document.getElementById('r6').innerHTML = html;
   document.getElementById('b6').style.display = 'block';
+  if(!sansRecompense){
+    modale("🔁 T'AS RIEN COMPRIS MAIS T'AS RÉUSSI",
+      "Aucune idée de comment t'as fait. Nous non plus. On valide quand même.");
+  }
 }
 
 document.getElementById('bSimon').onclick = function(){
@@ -403,7 +409,7 @@ Array.prototype.forEach.call(document.querySelectorAll('.pad'), function(p){
       if(mancheSimon > DERNIERE_SIMON){
         // elle a battu la manche secrète. On s'incline.
         finirSimon("👑 <b>MANCHE 8 RÉUSSIE.</b> 10 signaux, 70 ms, les boutons qui bougent à chaque clic. " +
-                   "On sait pas ce que t'es, mais c'est pas humain.");
+                   "On sait pas ce que t'es, mais c'est pas humain.", true);
         SONS.aura(); confettis(120);
         toast('👑 MODE NASDAS VAINCU');
         modale("👑 LÉGENDE VIVANTE",
