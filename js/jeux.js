@@ -1358,9 +1358,7 @@ ECRANS[11] = function(){
       "Bouton vaincu ! Alors… le cadeau n'est pas dedans. 😈<br>" +
       "Il est sur <b>la prochaine épreuve</b>. Juste après. Promis.";
     modale("🎁 PRESQUE 😈",
-      "12 esquives, 3 faux cadeaux et 3 mensonges — et le bouton était vide. " +
-      "Ton cadeau n'est pas ici : il est sur la PROCHAINE épreuve. " +
-      "Clique sur CONTINUER, il t'attend juste derrière. Qu'est-ce qui pourrait mal se passer.");
+      "BANANEEEEE y'a rien du tout ici, c'est à la prochaine épreuve");
   });
 })();
 
