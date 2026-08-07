@@ -1354,9 +1354,8 @@ ECRANS[11] = function(){
 
     SONS.fanfare(); confettis(110);
     document.getElementById('b11').style.display = 'block';
-    document.getElementById('d11').innerHTML =
-      "Bouton vaincu ! Alors… le cadeau n'est pas dedans. 😈<br>" +
-      "Il est sur <b>la prochaine épreuve</b>. Juste après. Promis.";
+    // Pas de texte sur la page : la fenêtre porte seule le message final.
+    document.getElementById('d11').innerHTML = '';
     modale("🎁 PRESQUE 😈",
       "BANANEEEEE y'a rien du tout ici, c'est à la prochaine épreuve");
   });
